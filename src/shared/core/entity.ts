@@ -1,14 +1,14 @@
 import { UUID, randomUUID } from 'crypto'
+import { ApiProperty } from '@nestjs/swagger'
 
 export abstract class Entity<T> {
-  protected readonly _id: UUID
+  @ApiProperty({
+    description: 'Entity Id'
+  })
+  readonly id: UUID
 
   constructor(props: T, id?: UUID) {
-    this._id = id ?? randomUUID()
+    this.id = id ?? randomUUID()
     Object.assign(this, props)
-  }
-
-  get id() {
-    return this._id
   }
 }
