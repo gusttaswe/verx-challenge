@@ -4,8 +4,7 @@ import { Entity } from 'shared/core/entity'
 
 interface CultureProps {
   id?: UUID
-  city: string
-  state: string
+  name: string
 }
 
 export enum cultureTypes {
