@@ -11,7 +11,7 @@ import { IProducerRepository } from '../../producer.contract'
 
 @Injectable()
 export class FakeProducerRepository implements IProducerRepository {
-  private producers: Producer[]
+  private producers: Producer[] = []
 
   async save(producer: Producer): Promise<Result<null, Error>> {
     this.producers.push(producer)
