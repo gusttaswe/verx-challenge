@@ -7,9 +7,9 @@ import { Address } from './address.domain'
 interface FarmProps {
   id?: UUID
   name: string
-  totalHectares: number
-  cultivableHectares: number
-  vegetationHectares: number
+  totalArea: number
+  cultivableArea: number
+  vegetationArea: number
   address: Address
   plantedCultures: Culture[]
 }
@@ -25,19 +25,19 @@ export class Farm extends Entity<FarmProps> {
     description: 'The total area of the farm in hectares',
     example: 1000
   })
-  totalHectares: number
+  totalArea: number
 
   @ApiProperty({
     description: 'The cultivable area of the farm in hectares',
     example: 800
   })
-  cultivableHectares: number
+  cultivableArea: number
 
   @ApiProperty({
     description: 'The area of vegetation on the farm in hectares',
     example: 200
   })
-  vegetationHectares: number
+  vegetationArea: number
 
   @ApiProperty({
     description: 'The list of cultures planted on the farm',
@@ -56,5 +56,12 @@ export class Farm extends Entity<FarmProps> {
 
   constructor({ id, ...props }: FarmProps) {
     super(props, id)
+  }
+
+  static isTotalAreaInsufficient(
+    farm: Pick<FarmProps, 'cultivableArea' | 'vegetationArea' | 'totalArea'>
+  ) {
+    const { cultivableArea, vegetationArea, totalArea } = farm
+    return cultivableArea + vegetationArea > totalArea
   }
 }
