@@ -25,10 +25,7 @@ import { Culture, cultureTypes } from 'domains/culture.domain'
 import { Farm } from 'domains/farm.domain'
 
 // DTOS
-import {
-  CreateProducerInput,
-  CreateProducerOutput
-} from './create-producer.dto'
+import { CreateProducerInput, CreateProducerOutput } from './create-producer.dto'
 
 const PRODUCER_MOCK: CreateProducerInput['producer'] = {
   document: faker.br.cnpj(),
@@ -75,9 +72,7 @@ describe('CreateProducer', () => {
       ]
     }).compile()
 
-    createProducerUseCase = moduleRef.get<CreateProducerUseCase>(
-      CreateProducerUseCase
-    )
+    createProducerUseCase = moduleRef.get<CreateProducerUseCase>(CreateProducerUseCase)
   })
 
   it('Should be able to create a Producer Successfully', async () => {

@@ -6,11 +6,7 @@ import { Farm } from 'domains/farm.domain'
 import { Address } from 'domains/address.domain'
 import { Culture } from 'domains/culture.domain'
 
-class ProducerFarm extends OmitType(Farm, [
-  'id',
-  'address',
-  'plantedCultures'
-] as const) {
+class ProducerFarm extends OmitType(Farm, ['id', 'address', 'plantedCultures'] as const) {
   address: Omit<Address, 'id'>
   plantedCultures: Omit<Culture, 'id'>[]
 }

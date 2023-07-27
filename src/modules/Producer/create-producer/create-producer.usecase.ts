@@ -12,10 +12,7 @@ import { UseCase } from 'shared/core/usecase'
 import { CreateProducerError } from './create-producer.error'
 
 // Interfaces & Types
-import {
-  CreateProducerInput,
-  CreateProducerOutput
-} from './create-producer.dto'
+import { CreateProducerInput, CreateProducerOutput } from './create-producer.dto'
 
 // Domains
 import { Producer } from 'domains/producer.domain'
@@ -28,8 +25,7 @@ type CreateProducerResponse = Result<CreateProducerOutput, CreateProducerError>
 
 @Injectable()
 export class CreateProducerUseCase
-  implements
-    UseCase<CreateProducerInput, CreateProducerOutput, CreateProducerError>
+  implements UseCase<CreateProducerInput, CreateProducerOutput, CreateProducerError>
 {
   constructor(
     private readonly producerRepository: IProducerRepository,
@@ -43,34 +39,25 @@ export class CreateProducerUseCase
     producer: producerInput
   }: CreateProducerInput): Promise<CreateProducerResponse> {
     const documentOrError = Document.create(producerInput.document)
+    if (documentOrError.isErr()) return new Err(CreateProducerError.InvalidDocument())
+    const document: Document = documentOrError.value
 
-    if (documentOrError.isErr())
-      return new Err(CreateProducerError.InvalidDocument())
+    const producerExists = await this.producerRepository.getByDocument(document)
+    if (producerExists.isOk()) return new Err(CreateProducerError.ProducerAlreadyExists())
 
-    const producerExists = await this.producerRepository.getByDocument(
-      documentOrError.value
-    )
-    if (producerExists.isOk())
-      return new Err(CreateProducerError.ProducerAlreadyExists())
+    const isAreaInsuficient = Farm.isTotalAreaInsufficient(farmInput)
+    if (isAreaInsuficient) return new Err(CreateProducerError.InsufficientFarmArea())
 
-    if (Farm.isTotalAreaInsufficient(farmInput))
-      return new Err(CreateProducerError.InsufficientFarmArea())
-
-    const producer = new Producer({
-      name: producerInput.name,
-      document: documentOrError.value
-    })
-    await this.producerRepository.save(producer)
+    const producer = new Producer({ ...producerInput, document: document })
+    const producerResult = await this.producerRepository.save(producer)
+    if (producerResult.isErr()) return new Err(CreateProducerError.UnableToCreateProducer())
 
     const address = new Address(farmInput.address)
-    await this.addressRepository.save(address)
+    const addressResult = await this.addressRepository.save(address)
+    if (addressResult.isErr()) return new Err(CreateProducerError.UnableToCreateFarmAddress())
 
-    const cultures = farmInput.plantedCultures.map(
-      (culture) => new Culture(culture)
-    )
-    const culturePromises = cultures.map((culture) =>
-      this.cultureRepository.save(culture)
-    )
+    const cultures = farmInput.plantedCultures.map((culture) => new Culture(culture))
+    const culturePromises = cultures.map((culture) => this.cultureRepository.save(culture))
     await Promise.all(culturePromises)
 
     const farm = new Farm({
@@ -84,10 +71,9 @@ export class CreateProducerUseCase
 
     await this.farmRepository.save(farm)
 
-    const output: CreateProducerOutput = {
+    return new Ok({
       producer,
       farm
-    }
-    return new Ok(output)
+    })
   }
 }
