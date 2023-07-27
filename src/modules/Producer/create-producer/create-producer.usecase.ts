@@ -45,7 +45,7 @@ export class CreateProducerUseCase
     const documentOrError = Document.create(producerInput.document)
 
     if (documentOrError.isErr())
-      return new Err(CreateProducerError.DocumentNotValid())
+      return new Err(CreateProducerError.InvalidDocument())
 
     if (Farm.isTotalAreaInsufficient(farmInput))
       return new Err(CreateProducerError.InsufficientFarmArea())
@@ -75,7 +75,7 @@ export class CreateProducerUseCase
       address: address,
       plantedCultures: cultures
     })
-    // Validate Area
+
     await this.farmRepository.save(farm)
 
     const output: CreateProducerOutput = {

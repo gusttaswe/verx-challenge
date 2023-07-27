@@ -135,7 +135,7 @@ describe('CreateProducer', () => {
 
     const result = await createProducerUseCase.execute(createProducerMock)
     expect(result.isErr()).toBe(true)
-    expect(result).toEqual(new Err(CreateProducerError.DocumentNotValid()))
+    expect(result).toEqual(new Err(CreateProducerError.InvalidDocument()))
   })
 
   it('Should allow creating a farm when the total area is greater than or equal to the sum of cultivable and vegetation area', async () => {

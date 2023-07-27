@@ -2,8 +2,8 @@ import { HttpStatusName } from 'shared/config/http-status.config'
 import { ApplicationError } from 'shared/errors/application.error'
 
 export class CreateProducerError extends ApplicationError {
-  static DocumentNotValid() {
-    return new CreateProducerError(CreateProducerErrorCodes.DOCUMENT_NOT_VALID)
+  static InvalidDocument() {
+    return new CreateProducerError(CreateProducerErrorCodes.INVALID_DOCUMENT)
   }
 
   static InsufficientFarmArea() {
@@ -14,7 +14,7 @@ export class CreateProducerError extends ApplicationError {
 }
 
 export const CreateProducerErrorCodes = {
-  DOCUMENT_NOT_VALID: {
+  INVALID_DOCUMENT: {
     code: '@Producer/create-producer-document-not-valid',
     message:
       'The Document provided is not valid! Check the document and try again.',
