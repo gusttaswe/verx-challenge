@@ -15,14 +15,11 @@ import { API, EnvVariables } from 'shared/config/envs'
 export class AuthGuard implements CanActivate {
   constructor(private readonly configService: ConfigService<EnvVariables>) {}
 
-  canActivate(
-    context: ExecutionContext
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest()
     const { authorization } = request.headers
 
-    if (!authorization)
-      throw new UnauthorizedException('Unauthorized. Missing Tokens!')
+    if (!authorization) throw new UnauthorizedException('Unauthorized. Missing Tokens!')
 
     const [prefix, token] = authorization.split(' ')
     const apiEnv = this.configService.get<API>('API')
