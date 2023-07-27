@@ -7,9 +7,10 @@ export abstract class Entity<T> {
     example: '7790e0d4-9e93-4575-bf8d-ae091db3c804'
   })
   readonly id: UUID
+  protected props: T
 
   constructor(props: T, id?: UUID) {
     this.id = id ?? randomUUID()
-    Object.assign(this, props)
+    this.props = props
   }
 }
