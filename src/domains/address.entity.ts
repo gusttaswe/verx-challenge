@@ -3,25 +3,28 @@ import { UUID } from 'crypto'
 import { Entity } from 'shared/core/entity'
 
 interface AddressProps {
-  id?: UUID
   city: string
   state: string
 }
 
 export class Address extends Entity<AddressProps> {
+  constructor(props: AddressProps, id?: UUID) {
+    super(props, id)
+  }
+
   @ApiProperty({
     description: 'City Name',
     example: 'São José dos Campos'
   })
-  city: string
+  get city(): string {
+    return this.props.city
+  }
 
   @ApiProperty({
     description: 'State',
     example: 'São Paulo'
   })
-  state: string
-
-  constructor({ id, ...props }: AddressProps) {
-    super(props, id)
+  get state(): string {
+    return this.props.state
   }
 }
