@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import faker from 'faker-br'
+import { Err } from 'neverthrow'
 
-// UseCase
+// Moduke
 import { CreateProducerUseCase } from './create-producer.usecase'
+import { CreateProducerError } from './create-producer.error'
 
 // Repository Contracts
 import { IProducerRepository } from 'repositories/producer/producer.contract'
@@ -28,7 +30,7 @@ import {
   CreateProducerOutput
 } from './create-producer.dto'
 
-const PRODUCER_MOCK: Omit<Producer, 'id'> = {
+const PRODUCER_MOCK: CreateProducerInput['producer'] = {
   document: faker.br.cnpj(),
   name: faker.name.firstName()
 }
@@ -86,9 +88,9 @@ describe('CreateProducer', () => {
       producer: PRODUCER_MOCK,
       farm: {
         name: faker.company.companyName(),
-        totalHectares: 15,
-        cultivableHectares: 12,
-        vegetationHectares: 3,
+        totalArea: 15,
+        cultivableArea: 12,
+        vegetationArea: 3,
         address: ADDRESS_MOCK,
         plantedCultures: CULTURE_MOCK
       }
@@ -115,11 +117,76 @@ describe('CreateProducer', () => {
     })
   })
 
-  // it('Should NOT be able to create a Producer with a incorrect Document', async () => {})
+  it('Should NOT be able to create a Producer with a incorrect Document', async () => {
+    const createProducerMock: CreateProducerInput = {
+      producer: {
+        ...PRODUCER_MOCK,
+        document: 'INVALID_DOCUMENT'
+      },
+      farm: {
+        name: faker.company.companyName(),
+        totalArea: 15,
+        cultivableArea: 12,
+        vegetationArea: 3,
+        address: ADDRESS_MOCK,
+        plantedCultures: CULTURE_MOCK
+      }
+    }
 
-  // it('Should allow creating a farm when the total area is greater than or equal to the sum of cultivable and vegetation area ', async () => {})
+    const result = await createProducerUseCase.execute(createProducerMock)
+    expect(result.isErr()).toBe(true)
+    expect(result).toEqual(new Err(CreateProducerError.DocumentNotValid()))
+  })
 
-  // it('Should throw an error when the sum of the cultivable and vegetation area is greater than the farm total area', async () => {})
+  it('Should allow creating a farm when the total area is greater than or equal to the sum of cultivable and vegetation area', async () => {
+    const createProducerMock: CreateProducerInput = {
+      producer: PRODUCER_MOCK,
+      farm: {
+        name: faker.company.companyName(),
+        totalArea: 15,
+        cultivableArea: 12,
+        vegetationArea: 3,
+        address: ADDRESS_MOCK,
+        plantedCultures: CULTURE_MOCK
+      }
+    }
 
-  // it('Should allow creating a producer with multiple planted cultures', async () => {})
+    const result = await createProducerUseCase.execute(createProducerMock)
+    expect(result.isOk()).toBe(true)
+  })
+
+  it('Should throw an error when the sum of the cultivable and vegetation area is greater than the farm total area', async () => {
+    const createProducerMock: CreateProducerInput = {
+      producer: PRODUCER_MOCK,
+      farm: {
+        name: faker.company.companyName(),
+        totalArea: 15,
+        cultivableArea: 12,
+        vegetationArea: 12,
+        address: ADDRESS_MOCK,
+        plantedCultures: CULTURE_MOCK
+      }
+    }
+
+    const result = await createProducerUseCase.execute(createProducerMock)
+    expect(result.isErr()).toBe(true)
+    expect(result).toEqual(new Err(CreateProducerError.InsufficientFarmArea()))
+  })
+
+  it('Should allow creating a producer with multiple planted cultures', async () => {
+    const createProducerMock: CreateProducerInput = {
+      producer: PRODUCER_MOCK,
+      farm: {
+        name: faker.company.companyName(),
+        totalArea: 15,
+        cultivableArea: 12,
+        vegetationArea: 3,
+        address: ADDRESS_MOCK,
+        plantedCultures: CULTURE_MOCK
+      }
+    }
+
+    const result = await createProducerUseCase.execute(createProducerMock)
+    expect(result.isOk()).toBe(true)
+  })
 })
