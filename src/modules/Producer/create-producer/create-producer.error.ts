@@ -11,6 +11,12 @@ export class CreateProducerError extends ApplicationError {
       CreateProducerErrorCodes.INSUFFICIENT_FARM_AREA
     )
   }
+
+  static ProducerAlreadyExists() {
+    return new CreateProducerError(
+      CreateProducerErrorCodes.PRODUCER_ALREADY_EXISTS
+    )
+  }
 }
 
 export const CreateProducerErrorCodes = {
@@ -25,5 +31,10 @@ export const CreateProducerErrorCodes = {
     message:
       'Total area should be greater than or equal to the sum of cultivable and vegetation area.',
     status: HttpStatusName.UNPROCESSABLE_ENTITY
+  },
+  PRODUCER_ALREADY_EXISTS: {
+    code: '@Producer/create-producer-producer-already-exists',
+    message: 'Unable to create Producer. Producer Already exists!',
+    status: HttpStatusName.CONFLICT
   }
 }

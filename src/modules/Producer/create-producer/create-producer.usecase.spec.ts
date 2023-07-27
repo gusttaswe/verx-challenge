@@ -51,7 +51,6 @@ const CULTURE_MOCK: Omit<Culture, 'id'>[] = [
 
 describe('CreateProducer', () => {
   let createProducerUseCase: CreateProducerUseCase
-  let fakeProducerRepository: IProducerRepository
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -79,8 +78,6 @@ describe('CreateProducer', () => {
     createProducerUseCase = moduleRef.get<CreateProducerUseCase>(
       CreateProducerUseCase
     )
-    fakeProducerRepository =
-      moduleRef.get<IProducerRepository>(IProducerRepository)
   })
 
   it('Should be able to create a Producer Successfully', async () => {
@@ -188,5 +185,26 @@ describe('CreateProducer', () => {
 
     const result = await createProducerUseCase.execute(createProducerMock)
     expect(result.isOk()).toBe(true)
+  })
+
+  it('Should not be able to two Producers with the same Document ', async () => {
+    const createProducerMock: CreateProducerInput = {
+      producer: PRODUCER_MOCK,
+      farm: {
+        name: faker.company.companyName(),
+        totalArea: 15,
+        cultivableArea: 12,
+        vegetationArea: 3,
+        address: ADDRESS_MOCK,
+        plantedCultures: CULTURE_MOCK
+      }
+    }
+
+    const result = await createProducerUseCase.execute(createProducerMock)
+    expect(result.isOk()).toBe(true)
+
+    expect(await createProducerUseCase.execute(createProducerMock)).toEqual(
+      new Err(CreateProducerError.ProducerAlreadyExists())
+    )
   })
 })

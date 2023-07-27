@@ -47,6 +47,12 @@ export class CreateProducerUseCase
     if (documentOrError.isErr())
       return new Err(CreateProducerError.InvalidDocument())
 
+    const producerExists = await this.producerRepository.getByDocument(
+      documentOrError.value
+    )
+    if (producerExists.isOk())
+      return new Err(CreateProducerError.ProducerAlreadyExists())
+
     if (Farm.isTotalAreaInsufficient(farmInput))
       return new Err(CreateProducerError.InsufficientFarmArea())
 
