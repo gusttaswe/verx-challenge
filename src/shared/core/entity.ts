@@ -1,16 +1,13 @@
-import { UUID, randomUUID } from 'crypto'
+import { UUID } from 'crypto'
 import { ApiProperty } from '@nestjs/swagger'
+import { PrimaryGeneratedColumn, Entity } from 'typeorm'
 
-export abstract class Entity<T> {
+@Entity()
+export abstract class CoreEntity {
   @ApiProperty({
     description: 'Entity Id',
     example: '7790e0d4-9e93-4575-bf8d-ae091db3c804'
   })
+  @PrimaryGeneratedColumn('uuid')
   readonly id: UUID
-  protected props: T
-
-  constructor(props: T, id?: UUID) {
-    this.id = id ?? randomUUID()
-    this.props = props
-  }
 }
