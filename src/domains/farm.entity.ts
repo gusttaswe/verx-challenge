@@ -1,8 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { UUID } from 'crypto'
-import { Entity } from 'shared/core/entity'
-import { Culture, cultureTypes } from './culture.entity'
+import { CoreEntity } from 'shared/core/entity'
+import { Culture } from './culture.entity'
 import { Address } from './address.entity'
+import { Producer } from './producer.entity'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToOne
+} from 'typeorm'
 
 interface FarmProps {
   name: string
@@ -10,10 +20,11 @@ interface FarmProps {
   cultivableArea: number
   vegetationArea: number
   address: Address
-  plantedCultures: Culture[]
+  cultures: Culture[]
 }
 
-export class Farm extends Entity<FarmProps> {
+@Entity()
+export class Farm extends CoreEntity<FarmProps> {
   constructor(props: FarmProps, id?: UUID) {
     super(props, id)
   }
@@ -29,41 +40,29 @@ export class Farm extends Entity<FarmProps> {
     description: 'The name of the farm',
     example: 'Farm of Joy'
   })
-  get name(): string {
-    return this.props.name
-  }
+  @Column()
+  name: string
 
   @ApiProperty({
     description: 'The total area of the farm in hectares',
     example: 1000
   })
-  get totalArea(): number {
-    return this.props.totalArea
-  }
+  @Column()
+  totalArea: number
 
   @ApiProperty({
     description: 'The cultivable area of the farm in hectares',
     example: 800
   })
-  get cultivableArea(): number {
-    return this.props.cultivableArea
-  }
+  @Column()
+  cultivableArea: number
 
   @ApiProperty({
     description: 'The area of vegetation on the farm in hectares',
     example: 200
   })
-  get vegetationArea(): number {
-    return this.props.vegetationArea
-  }
-
-  @ApiProperty({
-    description: 'The list of cultures planted on the farm',
-    example: [cultureTypes.SOJA, cultureTypes.MILHO]
-  })
-  get plantedCultures(): Culture[] {
-    return this.props.plantedCultures
-  }
+  @Column()
+  vegetationArea: number
 
   @ApiProperty({
     description: 'where the farm is located',
@@ -72,7 +71,14 @@ export class Farm extends Entity<FarmProps> {
       state: 'São Paulo'
     }
   })
-  get address(): Address {
-    return this.props.address
-  }
+  @OneToOne(() => Address)
+  @JoinColumn()
+  address: Address
+
+  @ManyToOne(() => Producer, (producer) => producer.farm)
+  producer: Producer
+
+  @ManyToMany(() => Culture)
+  @JoinTable()
+  cultures: Culture[]
 }

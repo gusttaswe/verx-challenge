@@ -13,7 +13,7 @@ export class Document {
     this.value = document
   }
 
-  static create(document: string): Result<Document, Error> {
+  static validate(document: string): Result<Document, Error> {
     const isDocumentValid =
       document.length < 14 ? cpf.isValid(document) : cnpj.isValid(document)
 

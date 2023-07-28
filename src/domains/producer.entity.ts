@@ -1,15 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Entity } from 'shared/core/entity'
-
-import { Document } from './document.domain'
+import { Entity, Column, OneToMany } from 'typeorm'
 import { UUID } from 'crypto'
+
+// shared
+import { CoreEntity } from 'shared/core/entity'
+
+// domains
+import { Farm } from './farm.entity'
+import { Document } from './document.domain'
 
 export interface ProducerProps {
   document: Document
   name: string
+  farm: Farm[]
 }
 
-export class Producer extends Entity<ProducerProps> {
+@Entity()
+export class Producer extends CoreEntity<ProducerProps> {
   constructor(props: ProducerProps, id?: UUID) {
     super(props, id)
   }
@@ -18,15 +25,16 @@ export class Producer extends Entity<ProducerProps> {
     description: 'The name of the producer',
     example: 'John Doe'
   })
-  get name(): ProducerProps['name'] {
-    return this.props.name
-  }
+  @Column()
+  name: string
 
   @ApiProperty({
     description: 'The CPF or CNPJ of the producer',
     example: '12345678900'
   })
-  get document(): ProducerProps['document']['value'] {
-    return this.props.document.value
-  }
+  @Column()
+  document: string
+
+  @OneToMany(() => Farm, (farm) => farm.producer)
+  farm: Farm[]
 }

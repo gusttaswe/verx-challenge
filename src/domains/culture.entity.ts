@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { UUID } from 'crypto'
-import { Entity } from 'shared/core/entity'
+import { CoreEntity } from 'shared/core/entity'
+import { Column, Entity } from 'typeorm'
 
 interface CultureProps {
   name: string
@@ -14,7 +15,8 @@ export enum cultureTypes {
   CANA_DE_ACUCAR = 'cana de açucar'
 }
 
-export class Culture extends Entity<CultureProps> {
+@Entity()
+export class Culture extends CoreEntity<CultureProps> {
   constructor(props: CultureProps, id?: UUID) {
     super(props, id)
   }
@@ -23,7 +25,6 @@ export class Culture extends Entity<CultureProps> {
     description: 'A Type of culture planted on the farm',
     example: cultureTypes
   })
-  get name(): string {
-    return this.props.name
-  }
+  @Column()
+  name: string
 }
