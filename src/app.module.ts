@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 // Modules
 import { ProducerModule } from 'modules/Producer/producer.module'
+import { SeederModule } from './seeds/seed.module'
 
 // Middlewares
 import { AuthGuard } from 'shared/middlewares/auth.guard'
@@ -13,15 +14,25 @@ import { AuthGuard } from 'shared/middlewares/auth.guard'
 import envs from 'shared/config/envs'
 import { TypeORMConfig } from 'shared/config/typeorm.config'
 
+// Schemas
+import { Producer } from 'domains/producer.entity'
+import { Farm } from 'domains/farm.entity'
+import { Culture } from 'domains/culture.entity'
+import { Address } from 'domains/address.entity'
+
 @Global()
 @Module({
   imports: [
+    SeederModule,
     ProducerModule,
     ConfigModule.forRoot({
       load: [envs],
       isGlobal: true
     }),
-    TypeOrmModule.forRoot(TypeORMConfig)
+    TypeOrmModule.forRoot({
+      ...TypeORMConfig,
+      entities: [Address, Culture, Farm, Producer]
+    })
   ],
   providers: [
     {
