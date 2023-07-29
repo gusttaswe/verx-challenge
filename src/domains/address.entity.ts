@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { UUID } from 'crypto'
-import { CoreEntity } from 'shared/core/entity'
 import { Column, Entity } from 'typeorm'
+
+// shared
+import { CoreEntity } from 'shared/core/entity'
+import { Result, Ok } from 'shared/config/neverthrow.config'
 
 interface AddressProps {
   city: string
@@ -9,9 +11,15 @@ interface AddressProps {
 }
 
 @Entity()
-export class Address extends CoreEntity<AddressProps> {
-  constructor(props: AddressProps, id?: UUID) {
-    super(props, id)
+export class Address extends CoreEntity {
+  constructor() {
+    super()
+  }
+
+  static create(props: AddressProps): Result<Address, Error> {
+    const address = new Address()
+    Object.assign(address, props)
+    return new Ok(address)
   }
 
   @ApiProperty({

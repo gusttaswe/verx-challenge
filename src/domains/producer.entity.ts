@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Entity, Column, OneToMany } from 'typeorm'
-import { UUID } from 'crypto'
 
 // shared
 import { CoreEntity } from 'shared/core/entity'
+import { Result, Ok } from 'shared/config/neverthrow.config'
 
 // domains
 import { Farm } from './farm.entity'
@@ -12,13 +12,19 @@ import { Document } from './document.domain'
 export interface ProducerProps {
   document: Document
   name: string
-  farm: Farm[]
+  farms: Farm[]
 }
 
 @Entity()
-export class Producer extends CoreEntity<ProducerProps> {
-  constructor(props: ProducerProps, id?: UUID) {
-    super(props, id)
+export class Producer extends CoreEntity {
+  constructor() {
+    super()
+  }
+
+  static create(props: ProducerProps): Result<Producer, Error> {
+    const producer = new Producer()
+    Object.assign(producer, { ...props, document: props.document.value })
+    return new Ok(producer)
   }
 
   @ApiProperty({
@@ -35,6 +41,6 @@ export class Producer extends CoreEntity<ProducerProps> {
   @Column()
   document: string
 
-  @OneToMany(() => Farm, (farm) => farm.producer)
-  farm: Farm[]
+  @OneToMany(() => Farm, (farm) => farm.producer, { cascade: true })
+  farms: Farm[]
 }

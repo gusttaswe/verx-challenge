@@ -1,9 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { UUID } from 'crypto'
-import { CoreEntity } from 'shared/core/entity'
-import { Culture } from './culture.entity'
-import { Address } from './address.entity'
-import { Producer } from './producer.entity'
 import {
   Column,
   Entity,
@@ -13,6 +7,16 @@ import {
   ManyToOne,
   OneToOne
 } from 'typeorm'
+
+// shared
+import { CoreEntity } from 'shared/core/entity'
+import { Result, Ok, Err } from 'shared/config/neverthrow.config'
+
+// Entities
+import { ApiProperty } from '@nestjs/swagger'
+import { Culture } from './culture.entity'
+import { Address } from './address.entity'
+import { Producer } from './producer.entity'
 
 interface FarmProps {
   name: string
@@ -24,9 +28,9 @@ interface FarmProps {
 }
 
 @Entity()
-export class Farm extends CoreEntity<FarmProps> {
-  constructor(props: FarmProps, id?: UUID) {
-    super(props, id)
+export class Farm extends CoreEntity {
+  constructor() {
+    super()
   }
 
   static isTotalAreaInsufficient(
@@ -34,6 +38,13 @@ export class Farm extends CoreEntity<FarmProps> {
   ) {
     const { cultivableArea, vegetationArea, totalArea } = farm
     return cultivableArea + vegetationArea > totalArea
+  }
+
+  static create(props: FarmProps): Result<Farm, Error> {
+    if (this.isTotalAreaInsufficient(props)) return new Err(Error('Insufficient area!'))
+    const farm = new Farm()
+    Object.assign(farm, props)
+    return new Ok(farm)
   }
 
   @ApiProperty({
@@ -71,14 +82,14 @@ export class Farm extends CoreEntity<FarmProps> {
       state: 'São Paulo'
     }
   })
-  @OneToOne(() => Address)
+  @OneToOne(() => Address, { cascade: true })
   @JoinColumn()
   address: Address
 
-  @ManyToOne(() => Producer, (producer) => producer.farm)
+  @ManyToOne(() => Producer, (producer) => producer.farms)
   producer: Producer
 
-  @ManyToMany(() => Culture)
+  @ManyToMany(() => Culture, { cascade: true })
   @JoinTable()
   cultures: Culture[]
 }

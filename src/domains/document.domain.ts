@@ -13,9 +13,10 @@ export class Document {
     this.value = document
   }
 
-  static validate(document: string): Result<Document, Error> {
+  static create(document: string): Result<Document, Error> {
+    const onlyNumbers = document.replace(/\D/gi, '')
     const isDocumentValid =
-      document.length < 14 ? cpf.isValid(document) : cnpj.isValid(document)
+      onlyNumbers.length < 14 ? cpf.isValid(onlyNumbers) : cnpj.isValid(onlyNumbers)
 
     return isDocumentValid
       ? new Ok(new Document(document))

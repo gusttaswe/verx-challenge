@@ -1,24 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { UUID } from 'crypto'
-import { CoreEntity } from 'shared/core/entity'
 import { Column, Entity } from 'typeorm'
 
+// shared
+import { CoreEntity } from 'shared/core/entity'
+import { Result, Ok } from 'shared/config/neverthrow.config'
+import { UUID } from 'crypto'
+
 interface CultureProps {
+  id?: UUID
   name: string
 }
 
 export enum cultureTypes {
-  SOJA = 'soja',
-  MILHO = 'milho',
-  ALGODAO = 'algodão',
-  CAFE = 'café',
-  CANA_DE_ACUCAR = 'cana de açucar'
+  SOJA = 'Soja',
+  MILHO = 'Milho',
+  ALGODAO = 'Algodão',
+  CAFE = 'Café',
+  CANA_DE_ACUCAR = 'Cana de açucar'
 }
 
 @Entity()
-export class Culture extends CoreEntity<CultureProps> {
-  constructor(props: CultureProps, id?: UUID) {
-    super(props, id)
+export class Culture extends CoreEntity {
+  constructor() {
+    super()
+  }
+
+  static create(props: CultureProps): Result<Culture, Error> {
+    const culture = new Culture()
+    Object.assign(culture, props)
+    return new Ok(culture)
   }
 
   @ApiProperty({
