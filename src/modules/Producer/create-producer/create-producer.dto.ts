@@ -1,31 +1,18 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { OmitType } from '@nestjs/swagger'
 
 // Domains
-import { Producer } from 'domains/producer.domain'
-import { Farm } from 'domains/farm.domain'
-import { Address } from 'domains/address.domain'
-import { Culture } from 'domains/culture.domain'
+import { Producer } from 'domains/producer.entity'
+import { Farm } from 'domains/farm.entity'
+import { Address } from 'domains/address.entity'
+import { Culture } from 'domains/culture.entity'
 
-class ProducerFarm extends OmitType(Farm, ['id', 'address', 'plantedCultures'] as const) {
+class ProducerFarm extends OmitType(Farm, ['id', 'address', 'cultures', 'producer'] as const) {
   address: Omit<Address, 'id'>
-  plantedCultures: Omit<Culture, 'id'>[]
+  cultures: Omit<Culture, 'id'>[]
 }
 
-export class CreateProducerInput {
-  producer: Omit<Producer, 'id' | 'document'> & { document: string }
+export class CreateProducerInput extends OmitType(Producer, ['id', 'farms'] as const) {
   farm: ProducerFarm
 }
 
-export class CreateProducerOutput {
-  @ApiProperty({
-    description: 'Instance of a Producer',
-    type: Producer
-  })
-  producer: Producer
-
-  @ApiProperty({
-    description: 'Instance of a Farm',
-    type: Farm
-  })
-  farm: Farm
-}
+export class CreateProducerOutput extends Producer {}

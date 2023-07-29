@@ -6,6 +6,14 @@ export class CreateProducerError extends ApplicationError {
     return new CreateProducerError(CreateProducerErrorCodes.INVALID_DOCUMENT)
   }
 
+  static InvalidAddress() {
+    return new CreateProducerError(CreateProducerErrorCodes.INVALID_ADDRESS)
+  }
+
+  static InvalidProducer() {
+    return new CreateProducerError(CreateProducerErrorCodes.INVALID_PRODUCER)
+  }
+
   static InsufficientFarmArea() {
     return new CreateProducerError(CreateProducerErrorCodes.INSUFFICIENT_FARM_AREA)
   }
@@ -18,16 +26,31 @@ export class CreateProducerError extends ApplicationError {
     return new CreateProducerError(CreateProducerErrorCodes.UNABLE_TO_CREATE_PRODUCER)
   }
 
-  static UnableToCreateFarmAddress() {
-    return new CreateProducerError(CreateProducerErrorCodes.UNABLE_TO_CREATE_FARM_ADDRESS)
+  static CultureNotFound() {
+    return new CreateProducerError(CreateProducerErrorCodes.CULTURE_NOT_FOUND)
   }
 }
 
 export const CreateProducerErrorCodes = {
   INVALID_DOCUMENT: {
-    code: '@Producer/create-producer-document-not-valid',
+    code: '@Producer/create-producer-invalid-document',
     message: 'The Document provided is not valid! Check the document and try again.',
     status: HttpStatusName.UNPROCESSABLE_ENTITY
+  },
+  INVALID_ADDRESS: {
+    code: '@Producer/create-producer-invalid-address',
+    message: 'The address provided is not valid!',
+    status: HttpStatusName.CONFLICT
+  },
+  INVALID_PRODUCER: {
+    code: '@Producer/create-producer-invalid-producer',
+    message: 'The producer provided is not valid!',
+    status: HttpStatusName.CONFLICT
+  },
+  UNABLE_TO_CREATE_PRODUCER: {
+    code: '@Producer/create-producer-invalid-producer',
+    message: 'Something went wrong. Unable to create Producer!',
+    status: HttpStatusName.CONFLICT
   },
   INSUFFICIENT_FARM_AREA: {
     code: '@Producer/create-producer-insufficient-area',
@@ -40,14 +63,9 @@ export const CreateProducerErrorCodes = {
     message: 'Unable to create Producer. Producer Already exists!',
     status: HttpStatusName.CONFLICT
   },
-  UNABLE_TO_CREATE_PRODUCER: {
-    code: '@Producer/create-producer-create-producer-error',
-    message: 'Something went wrong. Unable to create Producer!',
-    status: HttpStatusName.CONFLICT
-  },
-  UNABLE_TO_CREATE_FARM_ADDRESS: {
-    code: '@Producer/create-producer-farm-address-error',
-    message: 'Something went wrong. Unable to create farm address!',
+  CULTURE_NOT_FOUND: {
+    code: '@Producer/create-producer-culture-not-found',
+    message: 'Unable to create producer, Culture not found!',
     status: HttpStatusName.CONFLICT
   }
 }

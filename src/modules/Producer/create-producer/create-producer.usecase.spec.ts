@@ -13,41 +13,23 @@ import { ICultureRepository } from 'repositories/culture/culture.contract'
 import { IFarmRepository } from 'repositories/farm/farm.contract'
 
 // Fakes Implementations
-import { FakeProducerRepository } from 'repositories/producer/implementations/faker/producer.faker'
-import { FakeAddressRepository } from 'repositories/address/implementations/faker/address.faker'
-import { FakeCultureRepository } from 'repositories/culture/implementations/faker/culture.faker'
-import { FakeFarmRepository } from 'repositories/farm/implementations/faker/farm.faker'
+import { InMemoryProducerRepository } from 'repositories/producer/implementations/in-memory/producer.in-memory'
+import { InMemoryAddressRepository } from 'repositories/address/implementations/in-memory/address.in-memory'
+import { InMemoryCultureRepository } from 'repositories/culture/implementations/in-memory/culture.in-memory'
+import { InMemoryFarmRepository } from 'repositories/farm/implementations/in-memory/farm.in-memory'
 
 // Domains
-import { Producer } from 'domains/producer.domain'
-import { Address } from 'domains/address.domain'
-import { Culture, cultureTypes } from 'domains/culture.domain'
-import { Farm } from 'domains/farm.domain'
+import { Producer } from 'domains/producer.entity'
+import { Address } from 'domains/address.entity'
+import { Culture, cultureTypes } from 'domains/culture.entity'
+import { Farm } from 'domains/farm.entity'
 
 // DTOS
 import { CreateProducerInput, CreateProducerOutput } from './create-producer.dto'
 
-const PRODUCER_MOCK: CreateProducerInput['producer'] = {
-  document: faker.br.cnpj(),
-  name: faker.name.firstName()
-}
-
-const ADDRESS_MOCK: Omit<Address, 'id'> = {
-  city: faker.address.city(),
-  state: faker.address.state()
-}
-
-const CULTURE_MOCK: Omit<Culture, 'id'>[] = [
-  {
-    name: cultureTypes.MILHO
-  },
-  {
-    name: cultureTypes.CAFE
-  }
-]
-
 describe('CreateProducer', () => {
   let createProducerUseCase: CreateProducerUseCase
+  let createProducerInputMock: CreateProducerInput
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -55,91 +37,83 @@ describe('CreateProducer', () => {
         CreateProducerUseCase,
         {
           provide: IProducerRepository,
-          useClass: FakeProducerRepository
+          useClass: InMemoryProducerRepository
         },
         {
           provide: IAddressRepository,
-          useClass: FakeAddressRepository
+          useClass: InMemoryAddressRepository
         },
         {
           provide: ICultureRepository,
-          useClass: FakeCultureRepository
+          useClass: InMemoryCultureRepository
         },
         {
           provide: IFarmRepository,
-          useClass: FakeFarmRepository
+          useClass: InMemoryFarmRepository
         }
       ]
     }).compile()
 
     createProducerUseCase = moduleRef.get<CreateProducerUseCase>(CreateProducerUseCase)
-  })
 
-  it('Should be able to create a Producer Successfully', async () => {
-    const createProducerMock: CreateProducerInput = {
-      producer: PRODUCER_MOCK,
+    createProducerInputMock = {
+      document: faker.br.cnpj(),
+      name: faker.name.firstName(),
       farm: {
         name: faker.company.companyName(),
         totalArea: 15,
         cultivableArea: 12,
         vegetationArea: 3,
-        address: ADDRESS_MOCK,
-        plantedCultures: CULTURE_MOCK
+        address: {
+          city: faker.address.city(),
+          state: faker.address.state()
+        },
+        cultures: [{ name: cultureTypes.MILHO }, { name: cultureTypes.CAFE }]
       }
     }
+  })
 
-    const result = await createProducerUseCase.execute(createProducerMock)
-
+  it('Should be able to create a Producer Successfully', async () => {
+    const result = await createProducerUseCase.execute(createProducerInputMock)
     const resultValue: CreateProducerOutput = result._unsafeUnwrap()
 
     expect(result.isOk()).toBe(true)
 
-    expect(resultValue.producer).toBeInstanceOf(Producer)
-    expect(resultValue.producer).toHaveProperty('id')
+    expect(resultValue).toBeInstanceOf(Producer)
+    expect(resultValue).toHaveProperty('id')
 
-    expect(resultValue.farm).toBeInstanceOf(Farm)
-    expect(resultValue.farm).toHaveProperty('id')
+    const [farm] = resultValue.farms
+    expect(farm).toBeInstanceOf(Farm)
+    expect(farm).toHaveProperty('id')
 
-    expect(resultValue.farm.address).toBeInstanceOf(Address)
-    expect(resultValue.farm.address).toHaveProperty('id')
+    expect(farm.address).toBeInstanceOf(Address)
+    expect(farm.address).toHaveProperty('id')
 
-    resultValue.farm.plantedCultures.forEach((culture) => {
+    farm.cultures.forEach((culture) => {
       expect(culture).toBeInstanceOf(Culture)
       expect(culture).toHaveProperty('id')
     })
   })
 
   it('Should NOT be able to create a Producer with a incorrect Document', async () => {
-    const createProducerMock: CreateProducerInput = {
-      producer: {
-        ...PRODUCER_MOCK,
-        document: 'INVALID_DOCUMENT'
-      },
-      farm: {
-        name: faker.company.companyName(),
-        totalArea: 15,
-        cultivableArea: 12,
-        vegetationArea: 3,
-        address: ADDRESS_MOCK,
-        plantedCultures: CULTURE_MOCK
-      }
+    const createProducerMockInvalidDocument: CreateProducerInput = {
+      ...createProducerInputMock,
+      document: 'INVALID_DOCUMENT'
     }
 
-    const result = await createProducerUseCase.execute(createProducerMock)
+    const result = await createProducerUseCase.execute(createProducerMockInvalidDocument)
     expect(result.isErr()).toBe(true)
     expect(result).toEqual(new Err(CreateProducerError.InvalidDocument()))
   })
 
   it('Should allow creating a farm when the total area is greater than or equal to the sum of cultivable and vegetation area', async () => {
     const createProducerMock: CreateProducerInput = {
-      producer: PRODUCER_MOCK,
+      ...createProducerInputMock,
       farm: {
-        name: faker.company.companyName(),
-        totalArea: 15,
+        ...createProducerInputMock.farm,
+        totalArea: 20,
         cultivableArea: 12,
-        vegetationArea: 3,
-        address: ADDRESS_MOCK,
-        plantedCultures: CULTURE_MOCK
+        vegetationArea: 3
       }
     }
 
@@ -149,14 +123,12 @@ describe('CreateProducer', () => {
 
   it('Should throw an error when the sum of the cultivable and vegetation area is greater than the farm total area', async () => {
     const createProducerMock: CreateProducerInput = {
-      producer: PRODUCER_MOCK,
+      ...createProducerInputMock,
       farm: {
-        name: faker.company.companyName(),
-        totalArea: 15,
+        ...createProducerInputMock.farm,
+        totalArea: 10,
         cultivableArea: 12,
-        vegetationArea: 12,
-        address: ADDRESS_MOCK,
-        plantedCultures: CULTURE_MOCK
+        vegetationArea: 3
       }
     }
 
@@ -166,39 +138,27 @@ describe('CreateProducer', () => {
   })
 
   it('Should allow creating a producer with multiple planted cultures', async () => {
-    const createProducerMock: CreateProducerInput = {
-      producer: PRODUCER_MOCK,
-      farm: {
-        name: faker.company.companyName(),
-        totalArea: 15,
-        cultivableArea: 12,
-        vegetationArea: 3,
-        address: ADDRESS_MOCK,
-        plantedCultures: CULTURE_MOCK
-      }
-    }
-
-    const result = await createProducerUseCase.execute(createProducerMock)
+    const result = await createProducerUseCase.execute(createProducerInputMock)
+    const resultValue = result._unsafeUnwrap()
     expect(result.isOk()).toBe(true)
+    expect(resultValue.farms[0]).toHaveProperty('cultures')
+    expect(resultValue.farms[0].cultures.length).toBeGreaterThan(1)
   })
 
-  it('Should not be able to two Producers with the same Document ', async () => {
-    const createProducerMock: CreateProducerInput = {
-      producer: PRODUCER_MOCK,
-      farm: {
-        name: faker.company.companyName(),
-        totalArea: 15,
-        cultivableArea: 12,
-        vegetationArea: 3,
-        address: ADDRESS_MOCK,
-        plantedCultures: CULTURE_MOCK
-      }
-    }
+  it('Should throw an error creating a producer with a invalid culture', async () => {
+    const createProducerMockInvalidCulture: CreateProducerInput = createProducerInputMock
+    createProducerMockInvalidCulture.farm.cultures = [{ name: 'INVALID_CULTURE' }]
 
-    const result = await createProducerUseCase.execute(createProducerMock)
+    const result = await createProducerUseCase.execute(createProducerMockInvalidCulture)
+    expect(result.isOk()).toBe(false)
+    expect(result).toEqual(new Err(CreateProducerError.CultureNotFound()))
+  })
+
+  it('Should not be able to create two Producers with the same Document ', async () => {
+    const result = await createProducerUseCase.execute(createProducerInputMock)
     expect(result.isOk()).toBe(true)
 
-    expect(await createProducerUseCase.execute(createProducerMock)).toEqual(
+    expect(await createProducerUseCase.execute(createProducerInputMock)).toEqual(
       new Err(CreateProducerError.ProducerAlreadyExists())
     )
   })
