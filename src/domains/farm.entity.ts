@@ -89,6 +89,10 @@ export class Farm extends CoreEntity {
   @ManyToOne(() => Producer, (producer) => producer.farms)
   producer: Producer
 
+  @ApiProperty({
+    description: 'The area of vegetation on the farm in hectares',
+    type: [Culture]
+  })
   @ManyToMany(() => Culture, { cascade: true })
   @JoinTable()
   cultures: Culture[]

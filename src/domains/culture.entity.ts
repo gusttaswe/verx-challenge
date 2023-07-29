@@ -33,7 +33,7 @@ export class Culture extends CoreEntity {
 
   @ApiProperty({
     description: 'A Type of culture planted on the farm',
-    example: cultureTypes
+    example: cultureTypes.ALGODAO
   })
   @Column()
   name: string

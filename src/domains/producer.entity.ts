@@ -41,6 +41,10 @@ export class Producer extends CoreEntity {
   @Column()
   document: string
 
+  @ApiProperty({
+    description: 'The name of the producer',
+    type: [Farm]
+  })
   @OneToMany(() => Farm, (farm) => farm.producer, { cascade: true })
   farms: Farm[]
 }
