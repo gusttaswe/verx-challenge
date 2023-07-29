@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 
 // Modules
 import { ProducerModule } from 'modules/Producer/producer.module'
-import { SeederModule } from './seeds/seed.module'
+import { SeederModule } from './infra/database/seeds/seed.module'
 
 // Middlewares
 import { AuthGuard } from 'shared/middlewares/auth.guard'
