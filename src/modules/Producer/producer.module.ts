@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 
-// Controller
+// Controllers
 import { CreateProducerController } from './create-producer/create-producer.controller'
+import { UpdateProducerController } from './update-producer/update-producer.controller'
+
+// UseCases
+import { CreateProducerUseCase } from './create-producer/create-producer.usecase'
+import { UpdateProducerUseCase } from './update-producer/update-producer.usecase'
 
 // Injections
-import { CreateProducerUseCase } from './create-producer/create-producer.usecase'
 import { CultureRepositoryInjection } from 'repositories/culture/culture.injection'
 import { FarmRepositoryInjection } from 'repositories/farm/farm.injection'
 import { ProducerRepositoryInjection } from 'repositories/producer/producer.injection'
@@ -19,9 +23,10 @@ import { Address } from 'domains/address.entity'
 
 @Module({
   imports: [TypeOrmModule.forFeature([Address, Culture, Farm, Producer])],
-  controllers: [CreateProducerController],
+  controllers: [CreateProducerController, UpdateProducerController],
   providers: [
     CreateProducerUseCase,
+    UpdateProducerUseCase,
     CultureRepositoryInjection,
     FarmRepositoryInjection,
     ProducerRepositoryInjection,
