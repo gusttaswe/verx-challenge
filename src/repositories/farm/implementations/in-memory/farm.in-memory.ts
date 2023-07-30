@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'
+import { UUID } from 'crypto'
 
 // Domains
 import { Farm } from 'domains/farm.entity'
 
 // configs
-import { Ok, Result } from 'shared/config/neverthrow.config'
+import { Err, Ok, Result } from 'shared/config/neverthrow.config'
 
 // Contract
 import { IFarmRepository } from 'repositories/farm/farm.contract'
@@ -16,5 +17,10 @@ export class InMemoryFarmRepository implements IFarmRepository {
   async save(farm: Farm): Promise<Result<null, Error>> {
     this.farms.push(farm)
     return new Ok(null)
+  }
+
+  async getById(id: UUID): Promise<Result<Farm, Error>> {
+    const Farm = this.farms.find((farm) => farm.id === id)
+    return Farm ? new Ok(Farm) : new Err(Error('Farm Not Found!'))
   }
 }
