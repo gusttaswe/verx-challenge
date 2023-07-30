@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { Column, Entity } from 'typeorm'
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm'
 
 // shared
 import { CoreEntity } from 'shared/core/entity'
@@ -37,4 +37,10 @@ export class Culture extends CoreEntity {
   })
   @Column()
   name: string
+
+  @CreateDateColumn()
+  created_at?: Date
+
+  @UpdateDateColumn()
+  updated_at?: Date
 }

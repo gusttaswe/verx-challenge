@@ -1,11 +1,13 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToOne
+  OneToOne,
+  UpdateDateColumn
 } from 'typeorm'
 
 // shared
@@ -96,4 +98,10 @@ export class Farm extends CoreEntity {
   @ManyToMany(() => Culture, { cascade: true })
   @JoinTable()
   cultures: Culture[]
+
+  @CreateDateColumn()
+  created_at?: Date
+
+  @UpdateDateColumn()
+  updated_at?: Date
 }
