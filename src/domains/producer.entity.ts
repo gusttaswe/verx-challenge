@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Entity, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'
+import { UUID } from 'crypto'
 
 // shared
 import { CoreEntity } from 'shared/core/entity'
@@ -12,7 +13,7 @@ import { Document } from './document.domain'
 export interface ProducerProps {
   document: Document
   name: string
-  farms: Farm[]
+  farms?: Farm[]
 }
 
 @Entity()
@@ -46,7 +47,7 @@ export class Producer extends CoreEntity {
     type: [Farm]
   })
   @OneToMany(() => Farm, (farm) => farm.producer, { cascade: true })
-  farms: Farm[]
+  farms?: Farm[]
 
   @CreateDateColumn()
   created_at?: Date

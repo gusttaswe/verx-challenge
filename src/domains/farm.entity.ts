@@ -89,7 +89,7 @@ export class Farm extends CoreEntity {
   address: Address
 
   @ManyToOne(() => Producer, (producer) => producer.farms)
-  producer: Producer
+  producer?: Producer
 
   @ApiProperty({
     description: 'The area of vegetation on the farm in hectares',
