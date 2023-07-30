@@ -20,6 +20,12 @@ export class InMemoryProducerRepository implements IProducerRepository {
     return new Ok(producer)
   }
 
+  async update(producer: Producer): Promise<Result<Producer, Error>> {
+    const index = this.producers.findIndex((p) => p.id === producer.id)
+    Object.assign(this.producers[index], producer)
+    return new Ok(this.producers[index])
+  }
+
   async exists(ref: Document | UUID): Promise<boolean> {
     const producer =
       ref instanceof Document
