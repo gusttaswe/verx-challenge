@@ -1,5 +1,11 @@
 import { Controller, Res, HttpStatus, Body, Put, Param } from '@nestjs/common'
-import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiBasicAuth
+} from '@nestjs/swagger'
 import { Response } from 'express'
 
 // Module
@@ -14,6 +20,7 @@ import { UpdateProducerErrorCodes } from './update-producer.error'
 // Shared
 import { httpExceptionHandler } from 'shared/errors/http.error'
 
+@ApiBasicAuth()
 @ApiTags('Producer')
 @Controller('/producer')
 export class UpdateProducerController {

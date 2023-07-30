@@ -99,9 +99,17 @@ export class Farm extends CoreEntity {
   @JoinTable()
   cultures: Culture[]
 
+  @ApiProperty({
+    description: 'Farm creation date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @CreateDateColumn()
   created_at?: Date
 
+  @ApiProperty({
+    description: 'Farm last update date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @UpdateDateColumn()
   updated_at?: Date
 }

@@ -43,15 +43,23 @@ export class Producer extends CoreEntity {
   document: string
 
   @ApiProperty({
-    description: 'The name of the producer',
+    description: 'Farms associated with Producer',
     type: [Farm]
   })
   @OneToMany(() => Farm, (farm) => farm.producer, { cascade: true })
   farms?: Farm[]
 
+  @ApiProperty({
+    description: 'Producer creation date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @CreateDateColumn()
   created_at?: Date
 
+  @ApiProperty({
+    description: 'Producer last update date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @UpdateDateColumn()
   updated_at?: Date
 }
