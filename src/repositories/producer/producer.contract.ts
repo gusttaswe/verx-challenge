@@ -6,5 +6,6 @@ import { Document } from 'domains/document.domain'
 
 export abstract class IProducerRepository {
   abstract save(producer: Producer): Promise<Result<Producer, Error>>
-  abstract exists(document: Document): Promise<boolean>
+  abstract exists(ref: Document | Producer['id']): Promise<boolean>
+  abstract getById(id: Producer['id']): Promise<Result<Producer, Error>>
 }
