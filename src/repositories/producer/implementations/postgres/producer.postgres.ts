@@ -47,7 +47,7 @@ export class PostgresProducerRepository implements IProducerRepository {
   }
 
   async getById(id: UUID): Promise<Result<Producer, Error>> {
-    const producer = await this.producerRepository.findOneBy({ id: id })
+    const producer = await this.producerRepository.findOneBy({ id })
     return producer ? new Ok(producer) : new Err(Error('Producer Not Found!'))
   }
 }

@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
+import { UUID } from 'crypto'
 
 // Domains
 import { Farm } from 'domains/farm.entity'
 
 // configs
-import { Ok, Result } from 'shared/config/neverthrow.config'
+import { Err, Ok, Result } from 'shared/config/neverthrow.config'
 
 // Contract
 import { IFarmRepository } from 'repositories/farm/farm.contract'
@@ -19,7 +20,16 @@ export class PostgresFarmRepository implements IFarmRepository {
   ) {}
 
   async save(farm: Farm): Promise<Result<null, Error>> {
-    await this.farmRepository.create(farm)
-    return new Ok(null)
+    try {
+      await this.farmRepository.create(farm)
+      return new Ok(null)
+    } catch (err) {
+      return new Err(Error('Unable to create Farm!'))
+    }
+  }
+
+  async getById(id: UUID): Promise<Result<Farm, Error>> {
+    const farm = await this.farmRepository.findOneBy({ id })
+    return farm ? new Ok(farm) : new Err(Error('Farm Not Found!'))
   }
 }
