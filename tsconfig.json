@@ -21,7 +21,8 @@
       "shared/*": ["src/shared/*"],
       "modules/*": ["src/modules/*"],
       "providers/*": ["src/providers/*"],
-      "domains/*": ["src/domains/*"]
+      "domains/*": ["src/domains/*"],
+      "repositories/*": ["src/repositories/*"],
     },
   },
   "include": ["src/**/*"],
