@@ -19,9 +19,9 @@ export class PostgresProducerRepository implements IProducerRepository {
     private producerRepository: Repository<Producer>
   ) {}
 
-  async save(producer: Producer): Promise<Result<null, Error>> {
-    await this.producerRepository.save(producer)
-    return new Ok(null)
+  async save(producer: Producer): Promise<Result<Producer, Error>> {
+    const producerCreated = await this.producerRepository.save(producer)
+    return new Ok(producerCreated)
   }
 
   async exists(document: Document): Promise<boolean> {

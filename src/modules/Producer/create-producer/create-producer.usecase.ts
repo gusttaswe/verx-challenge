@@ -72,6 +72,6 @@ export class CreateProducerUseCase
     const producerResult = await this.producerRepository.save(producer)
     if (producerResult.isErr()) return new Err(CreateProducerError.UnableToCreateProducer())
 
-    return new Ok(producer)
+    return new Ok(producerResult.value)
   }
 }
