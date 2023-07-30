@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { Err } from 'neverthrow'
+import { Err, Ok } from 'neverthrow'
 import { randomUUID } from 'crypto'
 import faker from 'faker-br'
 
@@ -27,34 +27,34 @@ import { Farm } from 'domains/farm.entity'
 
 // DTOS
 import { UpdateProducerInput, UpdateProducerOutput } from './update-producer.dto'
-import { Document } from 'domains/document.domain'
 
-describe('CreateProducer', () => {
+const PRODUCER_MOCKED: Producer = {
+  id: randomUUID(),
+  document: faker.br.cnpj(),
+  name: faker.name.firstName()
+}
+
+const FARM_MOCKED: Farm = {
+  id: randomUUID(),
+  name: faker.company.companyName(),
+  totalArea: 15,
+  cultivableArea: 12,
+  vegetationArea: 3,
+  address: {
+    id: randomUUID(),
+    city: faker.address.city(),
+    state: faker.address.state()
+  },
+  cultures: [
+    { id: randomUUID(), name: cultureTypes.MILHO },
+    { id: randomUUID(), name: cultureTypes.CAFE }
+  ]
+}
+
+describe('UpdateProducer', () => {
   let createProducerUseCase: UpdateProducerUseCase
   let inMemoryProducerRepository: IProducerRepository
   let inMemoryFarmRepository: IFarmRepository
-
-  const updateProducerInputMock: UpdateProducerInput = {
-    id: randomUUID(),
-    document: faker.br.cnpj(),
-    name: faker.name.firstName(),
-    farm: {
-      id: randomUUID(),
-      name: faker.company.companyName(),
-      totalArea: 15,
-      cultivableArea: 12,
-      vegetationArea: 3,
-      address: {
-        id: randomUUID(),
-        city: faker.address.city(),
-        state: faker.address.state()
-      },
-      cultures: [
-        { id: randomUUID(), name: cultureTypes.MILHO },
-        { id: randomUUID(), name: cultureTypes.CAFE }
-      ]
-    }
-  }
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -82,51 +82,35 @@ describe('CreateProducer', () => {
     createProducerUseCase = moduleRef.get<UpdateProducerUseCase>(UpdateProducerUseCase)
     inMemoryProducerRepository = moduleRef.get<IProducerRepository>(IProducerRepository)
     inMemoryFarmRepository = moduleRef.get<IFarmRepository>(IFarmRepository)
-  })
 
-  beforeEach(async () => {
-    const farm = new Farm()
-    Object.assign(farm, {
-      ...updateProducerInputMock.farm,
-      producer: {
-        id: updateProducerInputMock.id,
-        document: Document.create(updateProducerInputMock.document)._unsafeUnwrap(),
-        name: updateProducerInputMock.name
-      }
-    })
-    await inMemoryFarmRepository.save(farm)
-
-    const producer = new Producer()
-    Object.assign(producer, {
-      id: updateProducerInputMock.id,
-      document: Document.create(updateProducerInputMock.document)._unsafeUnwrap().value,
-      name: updateProducerInputMock.name
-    })
-
-    await inMemoryProducerRepository.save(producer)
+    // Mock in-memory-data
+    inMemoryFarmRepository['farms'].push(FARM_MOCKED)
+    inMemoryProducerRepository['producers'].push(PRODUCER_MOCKED)
   })
 
   it('Should be able to update a Producer Successfully', async () => {
     const payload: UpdateProducerInput = {
-      ...updateProducerInputMock,
-      name: faker.name.firstName(), // Changed
+      producer: {
+        id: PRODUCER_MOCKED.id,
+        name: faker.name.firstName() // Changed
+      },
       farm: {
-        ...updateProducerInputMock.farm,
+        ...FARM_MOCKED,
         address: {
-          ...updateProducerInputMock.farm.address,
+          ...FARM_MOCKED.address,
           city: 'Mogi das Cruzes' // Changed
         },
         name: 'Gustavo Mata', // Changed
         totalArea: 100 // Changed
       }
     }
+
     const result = await createProducerUseCase.execute(payload)
-    const resultValue: UpdateProducerOutput = result._unsafeUnwrap()
 
-    console.log(JSON.stringify(resultValue, null, 2))
-
-    expect(resultValue.id).toEqual(payload.id)
-    expect(resultValue.name).toEqual(payload.name)
+    const resultValue = result._unsafeUnwrap()
+    expect(resultValue.id).toEqual(payload.producer.id)
+    expect(resultValue.name).toEqual(payload.producer.name)
+    expect(resultValue.document).toEqual(PRODUCER_MOCKED.document)
     expect(resultValue.farms[0].name).toEqual(payload.farm.name)
     expect(resultValue.farms[0].totalArea).toEqual(payload.farm.totalArea)
     expect(resultValue.farms[0].address.city).toEqual(payload.farm.address.city)

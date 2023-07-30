@@ -34,24 +34,22 @@ export class UpdateProducerUseCase
 
   public async execute(input: UpdateProducerInput): Promise<UpdateProducerResponse> {
     const [producerResult, farmResult] = await Promise.all([
-      this.producerRepository.getById(input.id),
+      this.producerRepository.getById(input.producer.id),
       this.farmRepository.getById(input.farm.id)
     ])
 
     if (producerResult.isErr()) return new Err(UpdateProducerError.ProducerNotFound())
     const producer: Producer = producerResult.value
-    Object.assign(producer, {
-      name: input.name,
-      document: input.document
-    })
 
-    if (farmResult.isErr()) return new Err(UpdateProducerError.ProducerNotFound())
+    if (farmResult.isErr()) return new Err(UpdateProducerError.FarmNotFound())
     const farm: Farm = farmResult.value
-    Object.assign(farm, input.farm)
 
-    const produceOrError = await this.producerRepository.save({
-      ...producer,
-      farms: [farm]
+    const updatedProducer = Object.assign(producer, input.producer)
+    const updatedFarm = Object.assign(farm, input.farm)
+
+    const produceOrError = await this.producerRepository.update({
+      ...updatedProducer,
+      farms: [updatedFarm]
     })
     if (produceOrError.isErr()) return new Err(UpdateProducerError.UnableToCreateProducer())
 
