@@ -23,7 +23,9 @@ import { InMemoryFarmRepository } from 'repositories/farm/implementations/in-mem
 import { Producer } from 'domains/producer.entity'
 
 // DTOS
-import { UpdateProducerInput } from './update-producer.dto'
+import { UpdateProducerParams, UpdateProducerInput } from './update-producer.dto'
+
+type UpdateProducerRequest = UpdateProducerParams & UpdateProducerInput
 
 const PRODUCER_MOCKED: Producer = {
   id: randomUUID(),
@@ -66,7 +68,7 @@ describe('UpdateProducer', () => {
   })
 
   it('Should be able to update a Producer Successfully', async () => {
-    const payload: UpdateProducerInput = {
+    const payload: UpdateProducerRequest = {
       id: PRODUCER_MOCKED.id,
       name: faker.name.firstName(), // Changed
       document: faker.br.cpf() // Changed
@@ -82,7 +84,7 @@ describe('UpdateProducer', () => {
   })
 
   it('Should return an error if the document provided is invalid', async () => {
-    const payload: UpdateProducerInput = {
+    const payload: UpdateProducerRequest = {
       id: PRODUCER_MOCKED.id,
       document: 'INVALID_DOCUMENT'
     }
@@ -92,7 +94,7 @@ describe('UpdateProducer', () => {
   })
 
   it('Should return an error if the producer is not found', async () => {
-    const payload: UpdateProducerInput = {
+    const payload: UpdateProducerRequest = {
       id: randomUUID(),
       document: faker.br.cnpj()
     }
@@ -106,7 +108,7 @@ describe('UpdateProducer', () => {
       .spyOn(inMemoryProducerRepository, 'update')
       .mockImplementation(async () => new Err(Error('Unable to update producer')))
 
-    const payload: UpdateProducerInput = {
+    const payload: UpdateProducerRequest = {
       id: PRODUCER_MOCKED.id,
       document: faker.br.cnpj()
     }

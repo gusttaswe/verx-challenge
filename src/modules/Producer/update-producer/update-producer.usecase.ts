@@ -13,17 +13,22 @@ import { Producer } from 'domains/producer.entity'
 import { Document } from 'domains/document.domain'
 
 // DTOs
-import { UpdateProducerInput, UpdateProducerOutput } from './update-producer.dto'
+import {
+  UpdateProducerInput,
+  UpdateProducerOutput,
+  UpdateProducerParams
+} from './update-producer.dto'
 
+type UpdateProducerRequest = UpdateProducerParams & UpdateProducerInput
 type UpdateProducerResponse = Result<UpdateProducerOutput, UpdateProducerError>
 
 @Injectable()
 export class UpdateProducerUseCase
-  implements UseCase<UpdateProducerInput, UpdateProducerOutput, UpdateProducerError>
+  implements UseCase<UpdateProducerRequest, UpdateProducerOutput, UpdateProducerError>
 {
   constructor(private readonly producerRepository: IProducerRepository) {}
 
-  public async execute(input: UpdateProducerInput): Promise<UpdateProducerResponse> {
+  public async execute(input: UpdateProducerRequest): Promise<UpdateProducerResponse> {
     if (input.document) {
       const documentOrError = Document.create(input.document)
       if (documentOrError.isErr()) return new Err(UpdateProducerError.InvalidDocument())
@@ -38,7 +43,6 @@ export class UpdateProducerUseCase
 
     const produceOrError = await this.producerRepository.update(updatedProducer)
     if (produceOrError.isErr()) return new Err(UpdateProducerError.UnableToUpdateProducer())
-
     return new Ok(produceOrError.value)
   }
 }
