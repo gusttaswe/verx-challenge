@@ -40,17 +40,17 @@ export const CreateProducerErrorCodes = {
   INVALID_ADDRESS: {
     code: '@Producer/create-producer-invalid-address',
     message: 'The address provided is not valid!',
-    status: HttpStatusName.CONFLICT
+    status: HttpStatusName.UNPROCESSABLE_ENTITY
   },
   INVALID_PRODUCER: {
     code: '@Producer/create-producer-invalid-producer',
     message: 'The producer provided is not valid!',
-    status: HttpStatusName.CONFLICT
+    status: HttpStatusName.UNPROCESSABLE_ENTITY
   },
   UNABLE_TO_CREATE_PRODUCER: {
     code: '@Producer/create-producer-invalid-producer',
     message: 'Something went wrong. Unable to create Producer!',
-    status: HttpStatusName.CONFLICT
+    status: HttpStatusName.BAD_REQUEST
   },
   INSUFFICIENT_FARM_AREA: {
     code: '@Producer/create-producer-insufficient-area',
@@ -65,7 +65,7 @@ export const CreateProducerErrorCodes = {
   },
   CULTURE_NOT_FOUND: {
     code: '@Producer/create-producer-culture-not-found',
-    message: 'Unable to create producer, Culture not found!',
-    status: HttpStatusName.CONFLICT
+    message: 'Unable to create Culture. Culture not found!',
+    status: HttpStatusName.NOT_FOUND
   }
 }
