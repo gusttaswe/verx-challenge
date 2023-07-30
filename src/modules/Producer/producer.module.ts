@@ -1,16 +1,31 @@
 import { Module } from '@nestjs/common'
+import { TypeOrmModule } from '@nestjs/typeorm'
 
 // Controller
-import { ListPostsController } from './create-producer_/create-producer.controller'
+import { CreateProducerController } from './create-producer/create-producer.controller'
 
-// Providers
-import { ListPostsUseCase } from './create-producer_/create-producer.usecase'
-import { CMSProviderInjection } from 'providers/cms/cms.injection'
-import { HttpModule } from '@nestjs/axios'
+// Injections
+import { CreateProducerUseCase } from './create-producer/create-producer.usecase'
+import { CultureRepositoryInjection } from 'repositories/culture/culture.injection'
+import { FarmRepositoryInjection } from 'repositories/farm/farm.injection'
+import { ProducerRepositoryInjection } from 'repositories/producer/producer.injection'
+import { AdressRepositoryInjection } from 'repositories/address/address.injection'
+
+// Schemas
+import { Producer } from 'domains/producer.entity'
+import { Farm } from 'domains/farm.entity'
+import { Culture } from 'domains/culture.entity'
+import { Address } from 'domains/address.entity'
 
 @Module({
-  imports: [HttpModule],
-  controllers: [ListPostsController],
-  providers: [ListPostsUseCase, CMSProviderInjection]
+  imports: [TypeOrmModule.forFeature([Address, Culture, Farm, Producer])],
+  controllers: [CreateProducerController],
+  providers: [
+    CreateProducerUseCase,
+    CultureRepositoryInjection,
+    FarmRepositoryInjection,
+    ProducerRepositoryInjection,
+    AdressRepositoryInjection
+  ]
 })
 export class ProducerModule {}
