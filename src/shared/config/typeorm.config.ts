@@ -1,12 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm'
+import envs from './envs'
+
+const { DATABASE } = envs()
 
 export const TypeORMConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: process.env.POSTGRES_HOST || 'postgres',
-  port: parseInt(process.env.POSTGRES_PORT, 10) || 5432,
-  username: process.env.POSTGRES_USER || 'admin',
-  password: process.env.POSTGRES_PASSWORD || 'admin',
-  database: process.env.POSTGRES_DB || 'verx-project',
-  synchronize: true,
+  host: DATABASE.host,
+  port: DATABASE.port || 5432,
+  username: DATABASE.username,
+  password: DATABASE.password,
+  database: DATABASE.database,
+  synchronize: process.env.NODE_ENV === 'development',
   retryAttempts: 2
 }

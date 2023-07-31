@@ -26,7 +26,6 @@ const swaggerSetup = (app: INestApplication) => {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
-
   swaggerSetup(app)
   app.useGlobalFilters(new HttpExceptionFilter())
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
