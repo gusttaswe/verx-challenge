@@ -34,7 +34,7 @@ const PRODUCER_MOCKED: Producer = {
 }
 
 describe('UpdateProducer', () => {
-  let createProducerUseCase: UpdateProducerUseCase
+  let updateProducerUseCase: UpdateProducerUseCase
   let inMemoryProducerRepository: IProducerRepository
 
   beforeEach(async () => {
@@ -60,7 +60,7 @@ describe('UpdateProducer', () => {
       ]
     }).compile()
 
-    createProducerUseCase = moduleRef.get<UpdateProducerUseCase>(UpdateProducerUseCase)
+    updateProducerUseCase = moduleRef.get<UpdateProducerUseCase>(UpdateProducerUseCase)
     inMemoryProducerRepository = moduleRef.get<IProducerRepository>(IProducerRepository)
 
     // Mock in-memory-data
@@ -74,7 +74,7 @@ describe('UpdateProducer', () => {
       document: faker.br.cpf() // Changed
     }
 
-    const result = await createProducerUseCase.execute(payload)
+    const result = await updateProducerUseCase.execute(payload)
     const resultValue = result._unsafeUnwrap()
 
     expect(result.isOk()).toBe(true)
@@ -89,7 +89,7 @@ describe('UpdateProducer', () => {
       document: 'INVALID_DOCUMENT'
     }
 
-    const result = await createProducerUseCase.execute(payload)
+    const result = await updateProducerUseCase.execute(payload)
     expect(result).toEqual(new Err(UpdateProducerError.InvalidDocument()))
   })
 
@@ -99,7 +99,7 @@ describe('UpdateProducer', () => {
       document: faker.br.cnpj()
     }
 
-    const result = await createProducerUseCase.execute(payload)
+    const result = await updateProducerUseCase.execute(payload)
     expect(result).toEqual(new Err(UpdateProducerError.ProducerNotFound()))
   })
 
@@ -113,7 +113,7 @@ describe('UpdateProducer', () => {
       document: faker.br.cnpj()
     }
 
-    const result = await createProducerUseCase.execute(payload)
+    const result = await updateProducerUseCase.execute(payload)
     expect(result).toEqual(new Err(UpdateProducerError.UnableToUpdateProducer()))
   })
 })
