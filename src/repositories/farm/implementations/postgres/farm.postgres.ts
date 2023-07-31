@@ -10,7 +10,12 @@ import { Farm } from 'domains/farm.entity'
 import { Err, Ok, Result } from 'shared/config/neverthrow.config'
 
 // Contract
-import { IFarmRepository } from 'repositories/farm/farm.contract'
+import {
+  GetAreaUsageDistribution,
+  GetCultureDistribution,
+  GetTotalFarms,
+  IFarmRepository
+} from 'repositories/farm/farm.contract'
 
 @Injectable()
 export class PostgresFarmRepository implements IFarmRepository {
@@ -43,5 +48,62 @@ export class PostgresFarmRepository implements IFarmRepository {
       relations: ['address', 'cultures']
     })
     return farm ? new Ok(farm) : new Err(Error('Farm Not Found!'))
+  }
+
+  async getTotalFarms(): Promise<Result<GetTotalFarms, Error>> {
+    try {
+      const { totalFarms, totalFarmArea } = await this.farmRepository
+        .createQueryBuilder('farm')
+        .select('SUM(farm.totalArea)', 'totalFarmArea')
+        .addSelect('COUNT(farm.id)', 'totalFarms')
+        .getRawOne()
+
+      return new Ok({
+        totalFarms: parseInt(totalFarms),
+        totalFarmArea: parseFloat(totalFarmArea)
+      })
+    } catch (err) {
+      return new Err(Error('Unable to fetch farm data'))
+    }
+  }
+
+  async getCultureDistribution(): Promise<Result<GetCultureDistribution[], Error>> {
+    try {
+      const farms = await this.farmRepository.find({ relations: ['cultures'] })
+      const distribution = {}
+      farms.forEach((farm) =>
+        farm.cultures.forEach(({ name }) => {
+          distribution[name] = (distribution[name] || 0) + 1
+        })
+      )
+
+      const distributionList = Object.entries(distribution).map(([culture, farmsCount]) => ({
+        culture,
+        farmsCount
+      })) as GetCultureDistribution[]
+
+      return new Ok(distributionList)
+    } catch (err) {
+      return new Err(Error('Unable to fetch farm data'))
+    }
+  }
+
+  async getAreaUsageDistribution(): Promise<Result<GetAreaUsageDistribution[], Error>> {
+    try {
+      const { agriculturalArea, vegetationArea } = await this.farmRepository
+        .createQueryBuilder('farm')
+        .select('SUM(farm.cultivableArea)', 'agriculturalArea')
+        .addSelect('SUM(farm.vegetationArea)', 'vegetationArea')
+        .getRawOne()
+
+      const landUsageDistribution: GetAreaUsageDistribution[] = [
+        { usageType: 'Agricultável', totalArea: parseFloat(agriculturalArea) },
+        { usageType: 'Vegetação', totalArea: parseFloat(vegetationArea) }
+      ]
+
+      return new Ok(landUsageDistribution)
+    } catch (err) {
+      return new Err(Error('Unable to fetch farm data'))
+    }
   }
 }
