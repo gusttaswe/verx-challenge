@@ -9,7 +9,6 @@ import { GetSummaryUseCase } from './get-summary/get-summary.usecase'
 
 // Injections
 import { FarmRepositoryInjection } from 'repositories/farm/farm.injection'
-import { AdressRepositoryInjection } from 'repositories/address/address.injection'
 
 // Schemas
 import { Producer } from 'domains/producer.entity'
@@ -20,6 +19,6 @@ import { Address } from 'domains/address.entity'
 @Module({
   imports: [TypeOrmModule.forFeature([Address, Culture, Farm, Producer])],
   controllers: [GetSummaryController],
-  providers: [GetSummaryUseCase, FarmRepositoryInjection, AdressRepositoryInjection]
+  providers: [GetSummaryUseCase, FarmRepositoryInjection]
 })
 export class DashboardModule {}

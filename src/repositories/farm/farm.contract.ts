@@ -3,6 +3,7 @@ import { Result } from 'shared/config/neverthrow.config'
 
 // Domains
 import { Farm } from 'domains/farm.entity'
+import { Address } from 'domains/address.entity'
 
 export type GetTotalFarms = {
   totalFarms: number
@@ -19,6 +20,11 @@ export type GetAreaUsageDistribution = {
   totalArea: number
 }
 
+export type GetStateDistribution = {
+  state: Address['state']
+  count: number
+}
+
 export abstract class IFarmRepository {
   abstract save(farm: Farm): Promise<Result<null, Error>>
   abstract getById(id: UUID): Promise<Result<Farm, Error>>
@@ -26,4 +32,5 @@ export abstract class IFarmRepository {
   abstract getTotalFarms(): Promise<Result<GetTotalFarms, Error>>
   abstract getCultureDistribution(): Promise<Result<GetCultureDistribution[], Error>>
   abstract getAreaUsageDistribution(): Promise<Result<GetAreaUsageDistribution[], Error>>
+  abstract getStateDistribution(): Promise<Result<GetStateDistribution[], Error>>
 }

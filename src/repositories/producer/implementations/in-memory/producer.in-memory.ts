@@ -40,9 +40,8 @@ export class InMemoryProducerRepository implements IProducerRepository {
   }
 
   async delete(id: Producer['id']): Promise<Result<null, Error>> {
-    const newArray = this.producers.filter((item) => item.id !== id)
-    this.producers = newArray
-
+    const newProducers = this.producers.filter((producer) => producer.id !== id)
+    this.producers = newProducers
     return new Ok(null)
   }
 }

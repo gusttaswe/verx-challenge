@@ -48,7 +48,7 @@ export class Producer extends CoreEntity {
     description: 'Farms associated with Producer',
     type: [Farm]
   })
-  @OneToMany(() => Farm, (farm) => farm.producer, { cascade: true })
+  @OneToMany(() => Farm, (farm) => farm.producer, { cascade: true, onDelete: 'CASCADE' })
   farms?: Farm[]
 
   @ApiProperty({
