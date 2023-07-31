@@ -50,4 +50,13 @@ export class PostgresProducerRepository implements IProducerRepository {
     const producer = await this.producerRepository.findOneBy({ id })
     return producer ? new Ok(producer) : new Err(Error('Producer Not Found!'))
   }
+
+  async delete(id: Producer['id']): Promise<Result<null, Error>> {
+    try {
+      await this.producerRepository.delete(id)
+      return new Ok(null)
+    } catch (err) {
+      return new Err(Error('Unable to delete producer'))
+    }
+  }
 }

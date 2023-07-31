@@ -3,7 +3,6 @@ import { Ok, Err, Result } from 'neverthrow'
 
 // Repositories
 import { IFarmRepository } from 'repositories/farm/farm.contract'
-import { IAddressRepository } from 'repositories/address/address.contract'
 
 // Module
 import { UseCase } from 'shared/core/usecase'
@@ -16,10 +15,7 @@ type GetSummaryResponse = Result<GetSummaryOutput, GetSummaryError>
 
 @Injectable()
 export class GetSummaryUseCase implements UseCase<null, GetSummaryOutput, GetSummaryError> {
-  constructor(
-    private readonly farmRepository: IFarmRepository,
-    private readonly addressRepository: IAddressRepository
-  ) {}
+  constructor(private readonly farmRepository: IFarmRepository) {}
 
   public async execute(): Promise<GetSummaryResponse> {
     const [
@@ -29,7 +25,7 @@ export class GetSummaryUseCase implements UseCase<null, GetSummaryOutput, GetSum
       areaUsageOrError
     ] = await Promise.all([
       this.farmRepository.getTotalFarms(),
-      this.addressRepository.getStateDistribution(),
+      this.farmRepository.getStateDistribution(),
       this.farmRepository.getCultureDistribution(),
       this.farmRepository.getAreaUsageDistribution()
     ])

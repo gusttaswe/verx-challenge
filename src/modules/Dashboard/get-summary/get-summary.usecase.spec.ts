@@ -13,7 +13,6 @@ import { IAddressRepository } from 'repositories/address/address.contract'
 
 // Fakes Implementations
 import { InMemoryFarmRepository } from 'repositories/farm/implementations/in-memory/farm.in-memory'
-import { InMemoryAddressRepository } from 'repositories/address/implementations/in-memory/address.in-memory'
 
 // Domains
 import { Culture, cultureTypes } from 'domains/culture.entity'
@@ -46,7 +45,6 @@ const MOCK_TIMES = 10
 describe('GetSummary', () => {
   let getSummaryUseCase: GetSummaryUseCase
   let inMemoryFarmRepository: IFarmRepository
-  let inMemoryAddressRepository: IAddressRepository
 
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
@@ -55,17 +53,12 @@ describe('GetSummary', () => {
         {
           provide: IFarmRepository,
           useClass: InMemoryFarmRepository
-        },
-        {
-          provide: IAddressRepository,
-          useClass: InMemoryAddressRepository
         }
       ]
     }).compile()
 
     getSummaryUseCase = moduleRef.get<GetSummaryUseCase>(GetSummaryUseCase)
     inMemoryFarmRepository = moduleRef.get<IFarmRepository>(IFarmRepository)
-    inMemoryAddressRepository = moduleRef.get<IAddressRepository>(IAddressRepository)
 
     // Mock in-memory-data
     const farmMockData = [...new Array(MOCK_TIMES)].map(() => {
@@ -79,7 +72,6 @@ describe('GetSummary', () => {
     })
 
     inMemoryFarmRepository['farms'] = farmMockData
-    inMemoryAddressRepository['addresses'] = farmMockData.map(({ address }) => address)
   })
 
   it('Should return successfully the dashboard summary data', async () => {
@@ -117,7 +109,7 @@ describe('GetSummary', () => {
 
   it('Should return an Error when its not possible to fetch State Distribution', async () => {
     jest
-      .spyOn(inMemoryAddressRepository, 'getStateDistribution')
+      .spyOn(inMemoryFarmRepository, 'getStateDistribution')
       .mockImplementation(async () => new Err(Error('Unable to fetch state distribution')))
     const result = await getSummaryUseCase.execute()
 

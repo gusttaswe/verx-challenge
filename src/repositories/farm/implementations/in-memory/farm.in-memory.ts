@@ -11,6 +11,7 @@ import { Err, Ok, Result } from 'shared/config/neverthrow.config'
 import {
   GetAreaUsageDistribution,
   GetCultureDistribution,
+  GetStateDistribution,
   GetTotalFarms,
   IFarmRepository
 } from 'repositories/farm/farm.contract'
@@ -76,5 +77,19 @@ export class InMemoryFarmRepository implements IFarmRepository {
     ]
 
     return new Ok(landUsageDistribution)
+  }
+
+  async getStateDistribution(): Promise<Result<GetStateDistribution[], Error>> {
+    const stateDistribution = this.farms.reduce((total, { address }) => {
+      total[address.state] = (total[address.state] || 0) + 1
+      return total
+    }, {})
+
+    const stateDistributionList = Object.entries(stateDistribution).map(([state, count]) => ({
+      state,
+      count
+    })) as GetStateDistribution[]
+
+    return new Ok(stateDistributionList)
   }
 }
