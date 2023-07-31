@@ -1,18 +1,16 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
-import { IsString, IsOptional, IsUUID } from 'class-validator'
+import { IsOptional, IsUUID } from 'class-validator'
 import { UUID } from 'crypto'
 
 // Domains
 import { Producer } from 'domains/producer.entity'
 
 export class UpdateProducerInput extends PartialType(
-  OmitType(Producer, ['farms', 'created_at', 'updated_at'] as const)
+  OmitType(Producer, ['id', 'farms', 'created_at', 'updated_at'] as const)
 ) {
-  @IsString()
   @IsOptional()
   name?: string
 
-  @IsString()
   @IsOptional()
   document?: string
 }

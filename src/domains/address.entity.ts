@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm'
+import { IsString, IsDateString } from 'class-validator'
 
 // shared
 import { CoreEntity } from 'shared/core/entity'
@@ -27,6 +28,7 @@ export class Address extends CoreEntity {
     example: 'São José dos Campos'
   })
   @Column()
+  @IsString()
   city: string
 
   @ApiProperty({
@@ -34,11 +36,22 @@ export class Address extends CoreEntity {
     example: 'São Paulo'
   })
   @Column()
+  @IsString()
   state: string
 
+  @ApiProperty({
+    description: 'Address creation date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @CreateDateColumn()
+  @IsDateString()
   created_at?: Date
 
+  @ApiProperty({
+    description: 'Address last update date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @UpdateDateColumn()
+  @IsDateString()
   updated_at?: Date
 }

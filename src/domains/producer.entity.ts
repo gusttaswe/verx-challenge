@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Entity, Column, OneToMany, CreateDateColumn, UpdateDateColumn } from 'typeorm'
-import { UUID } from 'crypto'
+import { IsString, IsDateString } from 'class-validator'
 
 // shared
 import { CoreEntity } from 'shared/core/entity'
@@ -33,6 +33,7 @@ export class Producer extends CoreEntity {
     example: 'John Doe'
   })
   @Column()
+  @IsString()
   name: string
 
   @ApiProperty({
@@ -40,6 +41,7 @@ export class Producer extends CoreEntity {
     example: '12345678900'
   })
   @Column()
+  @IsString()
   document: string
 
   @ApiProperty({
@@ -54,6 +56,7 @@ export class Producer extends CoreEntity {
     example: '2023-07-30T05:45:58.755Z'
   })
   @CreateDateColumn()
+  @IsDateString()
   created_at?: Date
 
   @ApiProperty({
@@ -61,5 +64,6 @@ export class Producer extends CoreEntity {
     example: '2023-07-30T05:45:58.755Z'
   })
   @UpdateDateColumn()
+  @IsDateString()
   updated_at?: Date
 }

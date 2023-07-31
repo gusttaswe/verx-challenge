@@ -9,6 +9,7 @@ import {
   OneToOne,
   UpdateDateColumn
 } from 'typeorm'
+import { IsString, IsNumber, IsDateString } from 'class-validator'
 
 // shared
 import { CoreEntity } from 'shared/core/entity'
@@ -54,6 +55,7 @@ export class Farm extends CoreEntity {
     example: 'Farm of Joy'
   })
   @Column()
+  @IsString()
   name: string
 
   @ApiProperty({
@@ -61,6 +63,7 @@ export class Farm extends CoreEntity {
     example: 1000
   })
   @Column()
+  @IsNumber()
   totalArea: number
 
   @ApiProperty({
@@ -68,6 +71,7 @@ export class Farm extends CoreEntity {
     example: 800
   })
   @Column()
+  @IsNumber()
   cultivableArea: number
 
   @ApiProperty({
@@ -75,6 +79,7 @@ export class Farm extends CoreEntity {
     example: 200
   })
   @Column()
+  @IsNumber()
   vegetationArea: number
 
   @ApiProperty({
@@ -104,6 +109,7 @@ export class Farm extends CoreEntity {
     example: '2023-07-30T05:45:58.755Z'
   })
   @CreateDateColumn()
+  @IsDateString()
   created_at?: Date
 
   @ApiProperty({
@@ -111,5 +117,6 @@ export class Farm extends CoreEntity {
     example: '2023-07-30T05:45:58.755Z'
   })
   @UpdateDateColumn()
+  @IsDateString()
   updated_at?: Date
 }
