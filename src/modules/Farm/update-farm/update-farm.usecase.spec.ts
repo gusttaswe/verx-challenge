@@ -8,14 +8,10 @@ import { UpdateFarmUseCase } from './update-farm.usecase'
 import { UpdateFarmError } from './update-farm.error'
 
 // Repository Contracts
-import { IProducerRepository } from 'repositories/producer/producer.contract'
-import { IAddressRepository } from 'repositories/address/address.contract'
 import { ICultureRepository } from 'repositories/culture/culture.contract'
 import { IFarmRepository } from 'repositories/farm/farm.contract'
 
 // Fakes Implementations
-import { InMemoryProducerRepository } from 'repositories/producer/implementations/in-memory/producer.in-memory'
-import { InMemoryAddressRepository } from 'repositories/address/implementations/in-memory/address.in-memory'
 import { InMemoryCultureRepository } from 'repositories/culture/implementations/in-memory/culture.in-memory'
 import { InMemoryFarmRepository } from 'repositories/farm/implementations/in-memory/farm.in-memory'
 

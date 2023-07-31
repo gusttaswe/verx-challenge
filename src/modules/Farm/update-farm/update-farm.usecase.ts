@@ -35,8 +35,8 @@ export class UpdateFarmUseCase
   }: UpdateFarmRequest): Promise<UpdateFarmResponse> {
     const farmResult = await this.farmRepository.getById(farmInput.id)
     if (farmResult.isErr()) return new Err(UpdateFarmError.FarmNotFound())
-
     const farm: Farm = Object.assign(farmResult.value, farmInput)
+
     if (Farm.isTotalAreaInsufficient(farm))
       return new Err(UpdateFarmError.InsufficientFarmArea())
 
