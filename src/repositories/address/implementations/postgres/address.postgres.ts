@@ -25,8 +25,7 @@ export class PostgresAddressRepository implements IAddressRepository {
 
   async getStateDistribution(): Promise<Result<StateDistribution[], Error>> {
     try {
-      const addresses = await this.addressRepository.find()
-
+      const addresses = await this.addressRepository.find({ relations: ['farm'] })
       const stateDistribution = addresses.reduce((total, address) => {
         total[address.state] = (total[address.state] || 0) + 1
         return total
@@ -41,6 +40,7 @@ export class PostgresAddressRepository implements IAddressRepository {
 
       return new Ok(stateDistributionList)
     } catch (err) {
+      console.log('error', err)
       return new Err(Error('Unable to fetch farm data'))
     }
   }

@@ -89,18 +89,18 @@ export class Farm extends CoreEntity {
       state: 'São Paulo'
     }
   })
-  @OneToOne(() => Address, { cascade: true })
+  @OneToOne(() => Address, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   address: Address
 
-  @ManyToOne(() => Producer, (producer) => producer.farms)
+  @ManyToOne(() => Producer, (producer) => producer.farms, { onDelete: 'CASCADE' })
   producer?: Producer
 
   @ApiProperty({
     description: 'The area of vegetation on the farm in hectares',
     type: [Culture]
   })
-  @ManyToMany(() => Culture, { cascade: true })
+  @ManyToMany(() => Culture, { cascade: true, onDelete: 'CASCADE' })
   @JoinTable()
   cultures: Culture[]
 
