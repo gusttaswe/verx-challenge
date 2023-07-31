@@ -4,9 +4,12 @@
 <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
 <p align="center">
 
-# API for Brain Agriculture Test
+# API for Brain Agriculture Test 🌾🚜
 
 This API is designed to handle the registration and management of rural producers. It allows users to add, edit, and delete rural producers with various data points related to their farms. 
+
+The development process was guided by the principles of Test-Driven Development (TDD), ensuring that each feature and functionality has a high test coverage. Additionally, the project was built following the Clean Architecture approach, prioritizing code quality and maintainability, resulting in a highly organized and scalable codebase.
+
 
 ## Main technologies
 <p align="center">
@@ -21,30 +24,33 @@ This API is designed to handle the registration and management of rural producer
 
 ## Documentation
 
+**Swagger docs:**
+
   The Swagger documentation can be found by running the project and accessing http://localhost:3000/docs/
+  ![Entity Relationship Diagram](./static/swagger.png)
+
 
 **Database ERD:**
   ![Entity Relationship Diagram](./static/erd.png)
-
-
-## Getting Started
-### Requirements
+## Requirements
 
 - Node.js 
 - Docker
 
-### Installation
+## Install
 
 
-**1. Install dependencies**
 
+**NPM**
 ```bash
-  $ npm install
-
-  or
-
-  $ yarn install
+npm install react-image-color-picker
 ```
+
+**Yarn**
+```bash
+yarn add react-image-color-picker
+```
+
 
 
 **2. Configure environment variables**
@@ -65,3 +71,8 @@ This API is designed to handle the registration and management of rural producer
 ```
 
 ### 🚀🚀🚀 Thats it!
+
+
+## Author
+
+⭐ Gustavo Mata [@gusttaswe](https://github.com/gusttaswe)
