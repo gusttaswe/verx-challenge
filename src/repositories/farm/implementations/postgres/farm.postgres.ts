@@ -28,8 +28,20 @@ export class PostgresFarmRepository implements IFarmRepository {
     }
   }
 
+  async update(farm: Farm): Promise<Result<Farm, Error>> {
+    try {
+      const farmUpdated = await this.farmRepository.save(farm)
+      return new Ok(farmUpdated)
+    } catch (err) {
+      return new Err(Error('Unable to update Farm'))
+    }
+  }
+
   async getById(id: UUID): Promise<Result<Farm, Error>> {
-    const farm = await this.farmRepository.findOneBy({ id })
+    const farm = await this.farmRepository.findOne({
+      where: { id },
+      relations: ['address', 'cultures']
+    })
     return farm ? new Ok(farm) : new Err(Error('Farm Not Found!'))
   }
 }

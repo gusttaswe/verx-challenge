@@ -42,11 +42,10 @@ export class CreateProducerUseCase
     if (addressOrError.isErr()) return new Err(CreateProducerError.InvalidAddress())
     const address: Address = addressOrError.value
 
-    const cultureNames = input.farm.cultures.map((culture) => culture.name)
-    const culturePromises = cultureNames.map((name) => this.cultureRepository.getByName(name))
-    const cultureResults = await Promise.all(culturePromises)
-
-    const invalidCultureResult = cultureResults.find((result) => result.isErr())
+    const cultureResults = await Promise.all(
+      input.farm.cultures.map(({ name }) => this.cultureRepository.getByName(name))
+    )
+    const invalidCultureResult = cultureResults.some((result) => result.isErr())
     if (invalidCultureResult) return new Err(CreateProducerError.CultureNotFound())
     const cultures: Culture[] = cultureResults.map((result) => result.isOk() && result.value)
 

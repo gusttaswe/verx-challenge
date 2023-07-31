@@ -26,7 +26,7 @@ class ProducerFarm extends OmitType(Farm, produceFarmOmit) {
   })
   @ValidateNested()
   @Type(() => CreateAddress)
-  address: Omit<Address, 'id' | 'created_at' | 'updated_at'>
+  address: CreateAddress
 
   @ApiProperty({
     example: [{ name: cultureTypes.ALGODAO }],
@@ -34,7 +34,7 @@ class ProducerFarm extends OmitType(Farm, produceFarmOmit) {
   })
   @ValidateNested()
   @Type(() => CreateCulture)
-  cultures: Omit<Culture, 'id' | 'created_at' | 'updated_at'>[]
+  cultures: CreateCulture[]
 }
 
 const createProducerOmit = ['id', 'farms', 'created_at', 'updated_at'] as const
