@@ -8,7 +8,12 @@ import { Farm } from 'domains/farm.entity'
 import { Err, Ok, Result } from 'shared/config/neverthrow.config'
 
 // Contract
-import { IFarmRepository } from 'repositories/farm/farm.contract'
+import {
+  GetAreaUsageDistribution,
+  GetCultureDistribution,
+  GetTotalFarms,
+  IFarmRepository
+} from 'repositories/farm/farm.contract'
 
 @Injectable()
 export class InMemoryFarmRepository implements IFarmRepository {
@@ -28,5 +33,48 @@ export class InMemoryFarmRepository implements IFarmRepository {
     const index = this.farms.findIndex((p) => p.id === farm.id)
     Object.assign(this.farms[index], Farm)
     return new Ok(this.farms[index])
+  }
+
+  async getTotalFarms(): Promise<Result<GetTotalFarms, Error>> {
+    const { totalFarms, totalFarmArea } = this.farms.reduce(
+      (total, farm) => {
+        total.totalFarms += 1
+        total.totalFarmArea += farm.totalArea
+        return total
+      },
+      {
+        totalFarms: 0,
+        totalFarmArea: 0
+      }
+    )
+    return new Ok({ totalFarms, totalFarmArea })
+  }
+
+  async getCultureDistribution(): Promise<Result<GetCultureDistribution[], Error>> {
+    const distribution = {}
+    this.farms.forEach((farm) =>
+      farm.cultures.forEach(({ name }) => {
+        distribution[name] = (distribution[name] || 0) + 1
+      })
+    )
+
+    const distributionList = Object.entries(distribution).map(([culture, farmsCount]) => ({
+      culture,
+      farmsCount
+    })) as GetCultureDistribution[]
+
+    return new Ok(distributionList)
+  }
+
+  async getAreaUsageDistribution(): Promise<Result<GetAreaUsageDistribution[], Error>> {
+    const agriculturalArea = this.farms.reduce((total, farm) => total + farm.cultivableArea, 0)
+    const vegetationArea = this.farms.reduce((total, farm) => total + farm.vegetationArea, 0)
+
+    const landUsageDistribution: GetAreaUsageDistribution[] = [
+      { usageType: 'Agricultável', totalArea: agriculturalArea },
+      { usageType: 'Vegetação', totalArea: vegetationArea }
+    ]
+
+    return new Ok(landUsageDistribution)
   }
 }
