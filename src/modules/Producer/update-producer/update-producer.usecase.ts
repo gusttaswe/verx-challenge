@@ -41,8 +41,8 @@ export class UpdateProducerUseCase
 
     const updatedProducer = Object.assign(producer, input)
 
-    const produceOrError = await this.producerRepository.update(updatedProducer)
-    if (produceOrError.isErr()) return new Err(UpdateProducerError.UnableToUpdateProducer())
-    return new Ok(produceOrError.value)
+    const producerOrError = await this.producerRepository.update(updatedProducer)
+    if (producerOrError.isErr()) return new Err(UpdateProducerError.UnableToUpdateProducer())
+    return new Ok(producerOrError.value)
   }
 }
