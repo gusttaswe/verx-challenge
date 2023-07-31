@@ -38,4 +38,11 @@ export class InMemoryProducerRepository implements IProducerRepository {
     const producer = this.producers.find((producer) => producer.id === id)
     return producer ? new Ok(producer) : new Err(Error('Producer Not Found!'))
   }
+
+  async delete(id: Producer['id']): Promise<Result<null, Error>> {
+    const newArray = this.producers.filter((item) => item.id !== id)
+    this.producers = newArray
+
+    return new Ok(null)
+  }
 }
