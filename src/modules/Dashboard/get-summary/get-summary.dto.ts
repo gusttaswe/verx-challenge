@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-import { UUID } from 'crypto'
-
-// Domains
-import { Farm } from 'domains/farm.entity'
-import { Address } from 'domains/address.entity'
-import { Culture, cultureTypes } from 'domains/culture.entity'
-
 class StateDistribution {
   state: string
   count: number
