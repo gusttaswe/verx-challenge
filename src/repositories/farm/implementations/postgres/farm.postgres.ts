@@ -13,6 +13,7 @@ import { Err, Ok, Result } from 'shared/config/neverthrow.config'
 import {
   GetAreaUsageDistribution,
   GetCultureDistribution,
+  GetStateDistribution,
   GetTotalFarms,
   IFarmRepository
 } from 'repositories/farm/farm.contract'
@@ -103,6 +104,28 @@ export class PostgresFarmRepository implements IFarmRepository {
 
       return new Ok(landUsageDistribution)
     } catch (err) {
+      return new Err(Error('Unable to fetch farm data'))
+    }
+  }
+
+  async getStateDistribution(): Promise<Result<GetStateDistribution[], Error>> {
+    try {
+      const farms = await this.farmRepository.find({ relations: ['address'] })
+      const stateDistribution = farms.reduce((total, { address }) => {
+        total[address.state] = (total[address.state] || 0) + 1
+        return total
+      }, {})
+
+      const stateDistributionList = Object.entries(stateDistribution).map(
+        ([state, count]) => ({
+          state,
+          count
+        })
+      ) as GetStateDistribution[]
+
+      return new Ok(stateDistributionList)
+    } catch (err) {
+      console.log('error', err)
       return new Err(Error('Unable to fetch farm data'))
     }
   }
