@@ -14,6 +14,10 @@ const swaggerSetup = (app: INestApplication) => {
     .setTitle(Pkg.name)
     .setDescription(Pkg.description)
     .setVersion(Pkg.version)
+    .addBasicAuth({
+      type: 'http',
+      scheme: 'basic'
+    })
     .build()
 
   const document = SwaggerModule.createDocument(app, config)

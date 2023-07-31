@@ -1,4 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger'
+import { ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
 
 // Domains
 import { Producer } from 'domains/producer.entity'
@@ -6,23 +8,42 @@ import { Farm } from 'domains/farm.entity'
 import { Address } from 'domains/address.entity'
 import { Culture, cultureTypes } from 'domains/culture.entity'
 
-class ProducerFarm extends OmitType(Farm, ['id', 'address', 'cultures', 'producer'] as const) {
+class CreateAddress extends OmitType(Address, ['id', 'created_at', 'updated_at'] as const) {}
+class CreateCulture extends OmitType(Culture, ['id', 'created_at', 'updated_at'] as const) {}
+
+const produceFarmOmit = [
+  'id',
+  'address',
+  'cultures',
+  'producer',
+  'created_at',
+  'updated_at'
+] as const
+
+class ProducerFarm extends OmitType(Farm, produceFarmOmit) {
   @ApiProperty({
-    type: OmitType(Address, ['id'] as const)
+    type: CreateAddress
   })
-  address: Omit<Address, 'id'>
+  @ValidateNested()
+  @Type(() => CreateAddress)
+  address: Omit<Address, 'id' | 'created_at' | 'updated_at'>
 
   @ApiProperty({
     example: [{ name: cultureTypes.ALGODAO }],
-    type: Culture
+    type: CreateCulture
   })
-  cultures: Omit<Culture, 'id'>[]
+  @ValidateNested()
+  @Type(() => CreateCulture)
+  cultures: Omit<Culture, 'id' | 'created_at' | 'updated_at'>[]
 }
 
-export class CreateProducerInput extends OmitType(Producer, ['id', 'farms'] as const) {
+const createProducerOmit = ['id', 'farms', 'created_at', 'updated_at'] as const
+export class CreateProducerInput extends OmitType(Producer, createProducerOmit) {
   @ApiProperty({
     type: ProducerFarm
   })
+  @ValidateNested()
+  @Type(() => ProducerFarm)
   farm: ProducerFarm
 }
 

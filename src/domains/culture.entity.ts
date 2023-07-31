@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Column, CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm'
+import { IsString, IsDateString } from 'class-validator'
 
 // shared
 import { CoreEntity } from 'shared/core/entity'
@@ -36,11 +37,22 @@ export class Culture extends CoreEntity {
     example: cultureTypes.ALGODAO
   })
   @Column()
+  @IsString()
   name: string
 
+  @ApiProperty({
+    description: 'Culture creation date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @CreateDateColumn()
+  @IsDateString()
   created_at?: Date
 
+  @ApiProperty({
+    description: 'Culture last update date',
+    example: '2023-07-30T05:45:58.755Z'
+  })
   @UpdateDateColumn()
+  @IsDateString()
   updated_at?: Date
 }
