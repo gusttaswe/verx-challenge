@@ -6,20 +6,42 @@ import { Repository } from 'typeorm'
 import { Address } from 'domains/address.entity'
 
 // configs
-import { Ok, Result } from 'shared/config/neverthrow.config'
+import { Err, Ok, Result } from 'shared/config/neverthrow.config'
 
 // Contract
-import { IAddressRepository } from 'repositories/address/address.contract'
+import { IAddressRepository, StateDistribution } from 'repositories/address/address.contract'
 
 @Injectable()
 export class PostgresAddressRepository implements IAddressRepository {
   constructor(
     @InjectRepository(Address)
-    private producerRepository: Repository<Address>
+    private addressRepository: Repository<Address>
   ) {}
 
   async save(producer: Address): Promise<Result<null, Error>> {
-    await this.producerRepository.save(producer)
+    await this.addressRepository.save(producer)
     return new Ok(null)
+  }
+
+  async getStateDistribution(): Promise<Result<StateDistribution[], Error>> {
+    try {
+      const addresses = await this.addressRepository.find()
+
+      const stateDistribution = addresses.reduce((total, address) => {
+        total[address.state] = (total[address.state] || 0) + 1
+        return total
+      }, {})
+
+      const stateDistributionList = Object.entries(stateDistribution).map(
+        ([state, count]) => ({
+          state,
+          count
+        })
+      ) as StateDistribution[]
+
+      return new Ok(stateDistributionList)
+    } catch (err) {
+      return new Err(Error('Unable to fetch farm data'))
+    }
   }
 }
