@@ -23,4 +23,10 @@ export class InMemoryFarmRepository implements IFarmRepository {
     const Farm = this.farms.find((farm) => farm.id === id)
     return Farm ? new Ok(Farm) : new Err(Error('Farm Not Found!'))
   }
+
+  async update(farm: Farm): Promise<Result<Farm, Error>> {
+    const index = this.farms.findIndex((p) => p.id === farm.id)
+    Object.assign(this.farms[index], Farm)
+    return new Ok(this.farms[index])
+  }
 }
