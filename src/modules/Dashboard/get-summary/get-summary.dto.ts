@@ -32,7 +32,7 @@ export class GetSummaryOutput {
     description: 'The distribution of farms by state',
     example: [
       { state: 'Sergipe', count: 1 },
-      { state: 'Bahia', count: 2 },
+      { state: 'Bahia', count: 4 },
       { state: 'Pernambuco', count: 5 }
     ]
   })
