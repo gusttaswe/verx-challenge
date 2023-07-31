@@ -1,6 +1,6 @@
 {
   "name": "brain-agriculture-test",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "This API is designed to handle the registration and management of rural producers. It allows users to add, edit, and delete rural producers with various data points related to their farms.",
   "author": "Gustavo Mata <dev.gustta.h@gmail.com",
   "private": true,
